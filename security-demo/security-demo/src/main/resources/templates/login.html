@@ -1,0 +1,317 @@
+<!DOCTYPE html> 
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>ShieldNet | Iniciar Sesión</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --light-bg: #f8f9fa;
+            --border-radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .background-network-effect {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        .bg-node {
+            width: 10px;
+            height: 10px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .bg-line {
+            position: absolute;
+            height: 1px;
+            background-color: var(--primary-color);
+            transform-origin: 0% 0%;
+        }
+
+        .login-layout {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 40px;
+            width: 100%;
+            max-width: 800px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 40px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
+        }
+
+        .brand {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding-right: 40px;
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+            gap: 0; /* Elimina el espacio entre los elementos flex */
+        }
+
+        .logo {
+            width: 230px; /* Aumentado de 180px a 200px */
+            height: 200px; /* Aumentado de 150px a 170px */
+            margin-bottom: 0;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 26px;
+            margin-top: -30px; /* Valor negativo para acercar más el texto al logo */
+        }
+
+        .form-section {
+            flex: 1;
+            width: 100%;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 15px;
+            background-color: white;
+        }
+
+        input:focus {
+            border-color: var(--accent-color);
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px;
+            position: relative;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .login-icon {
+            display: inline-block;
+            margin-right: 15px;
+            position: relative;
+            width: 30px;
+            height: 20px;
+        }
+
+        .door {
+            position: absolute;
+            top: 0;
+            left: 8px;
+            width: 12px;
+            height: 20px;
+            background-color: white;
+            border: 1px solid rgba(255,255,255,0.7);
+            transform-origin: left center;
+            animation: doorOpen 2s infinite;
+        }
+
+        .doorframe {
+            position: absolute;
+            top: 0;
+            left: 7px;
+            width: 14px;
+            height: 20px;
+            border: 1px solid rgba(255,255,255,0.9);
+        }
+
+        .person {
+            position: absolute;
+            top: 2px;
+            font-size: 16px;
+            animation: personMove 2s infinite;
+        }
+
+        @keyframes personMove {
+            0% { transform: translateX(-12px); opacity: 0; }
+            30% { opacity: 1; }
+            70% { transform: translateX(2px); opacity: 1; }
+            100% { transform: translateX(12px); opacity: 0; }
+        }
+
+        @keyframes doorOpen {
+            0%, 20% { transform: perspective(400px) rotateY(0deg); }
+            60%, 100% { transform: perspective(400px) rotateY(-70deg); }
+        }
+
+        .error-message, .success-message {
+            font-size: 15px;
+            font-weight: 500;
+            margin-top: 20px;
+        }
+
+        .error-message {
+            color: var(--error-color);
+        }
+
+        .success-message {
+            color: var(--success-color);
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            font-size: 13px;
+            color: #2c3e50;
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--primary-color);
+        }
+
+        @media (max-width: 768px) {
+            .login-layout {
+                flex-direction: column;
+                gap: 30px;
+                padding: 25px;
+            }
+
+            .brand {
+                padding-right: 0;
+                border-right: none;
+                padding-bottom: 30px;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-network-effect">
+        <div class="bg-node" style="top: 15%; left: 10%;"></div>
+        <div class="bg-line" style="width: 200px; top: 15%; left: 10%; transform: rotate(30deg);"></div>
+        <div class="bg-node" style="top: 35%; left: 25%;"></div>
+        <div class="bg-line" style="width: 250px; top: 35%; left: 25%; transform: rotate(-20deg);"></div>
+        <div class="bg-node" style="top: 65%; left: 15%;"></div>
+        <div class="bg-line" style="width: 300px; top: 65%; left: 15%; transform: rotate(15deg);"></div>
+        <div class="bg-node" style="top: 20%; left: 70%;"></div>
+        <div class="bg-line" style="width: 200px; top: 20%; left: 70%; transform: rotate(-25deg);"></div>
+        <div class="bg-node" style="top: 50%; left: 80%;"></div>
+        <div class="bg-line" style="width: 250px; top: 50%; left: 80%; transform: rotate(10deg);"></div>
+        <div class="bg-node" style="top: 75%; left: 75%;"></div>
+        <div class="bg-line" style="width: 180px; top: 75%; left: 75%; transform: rotate(-15deg);"></div>
+    </div>
+
+    <div class="login-layout">
+        <div class="brand">
+            <div class="logo">
+                <img src="/img/logo-shieldnet.svg" alt="Logo">
+            </div>
+            <h1>ShieldNet</h1>
+        </div>
+
+        <div class="form-section">
+            <form th:action="@{/login}" method="post">
+                <div class="form-group">
+                    <label for="username">Usuario</label>
+                    <input type="text" id="username" name="username" placeholder="Ingrese su nombre de usuario" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Contraseña</label>
+                    <input type="password" id="password" name="password" placeholder="Ingrese su contraseña" required>
+                </div>
+
+                <div class="form-group">
+                    <button type="submit">
+                        <span class="login-icon">
+                            <span class="doorframe"></span>
+                            <span class="door"></span>
+                            <span class="person"><i class="fas fa-user"></i></span>
+                        </span>
+                        Iniciar Sesión
+                    </button>
+                </div>
+
+                <div th:if="${param.error}" class="error-message">
+                    <i class="fas fa-exclamation-circle"></i> Usuario o contraseña incorrectos. Por favor, intente nuevamente.
+                </div>
+
+                <div th:if="${param.logout}" class="success-message">
+                    <i class="fas fa-check-circle"></i> Has cerrado sesión correctamente.
+                </div>
+
+                <div class="footer">
+                    ¿No tienes una cuenta?
+                    <a href="/registrar" style="color: var(--accent-color); font-weight: bold; text-decoration: none;">Regístrate aquí</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 ShieldNet. Todos los derechos reservados.</p>
+    </footer>
+</body>
+</html>

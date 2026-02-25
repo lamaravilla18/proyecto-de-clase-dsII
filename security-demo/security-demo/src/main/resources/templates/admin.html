@@ -1,0 +1,4202 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShieldNet | Panel de Administración</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --light-bg: #f8f9fa;
+            --border-radius: 8px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px; 
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: var(--primary-color);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-info span {
+            margin-right: 20px;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .logout-btn {
+            background-color: var(--accent-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+
+        .logout-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .logout-btn i {
+            margin-right: 8px;
+        }
+
+        .content-wrapper {
+            display: flex;
+            gap: 20px;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .sidebar .nav-link {
+            display: block;
+            color: var(--primary-color);
+            padding: 12px 15px;
+            text-decoration: none;
+            margin-bottom: 10px;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .sidebar .nav-link:hover {
+            background-color: var(--light-bg);
+            color: var(--accent-color);
+        }
+
+        .sidebar .nav-link.active {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .sidebar .nav-link i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .main-content {
+            flex: 1;
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 25px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0;
+        }
+
+        .main-content h2 {
+            color: var(--primary-color);
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            flex: 1;
+            min-width: 200px;
+            background-color: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .stat-card h3 {
+            font-size: 16px;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .stat-card .stat-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        .panel-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .panel-box {
+            flex: 1;
+            min-width: 200px;
+            padding: 25px;
+            background-color: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e0e0e0;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .panel-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-color: var(--accent-color);
+        }
+
+        .panel-box i {
+            font-size: 40px;
+            margin-bottom: 15px;
+            color: var(--accent-color);
+        }
+
+        .panel-box h3 {
+            color: var(--primary-color);
+            font-size: 18px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto; 
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: var(--border-radius);
+            width: 50%;
+            max-width: 600px;
+            max-height: 80vh;
+             overflow-y: auto;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 1px solid #e0e0e0;
+        }
+
+        .close-modal {
+            cursor: pointer;
+            font-size: 24px;
+            color: var(--primary-color);
+            float: right;
+        }
+
+        .form-group {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--primary-color);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 15px;
+            transition: border 0.3s;
+            background-color: white;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--accent-color);
+            outline: none;
+        }
+
+        .btn {
+            padding: 12px 15px;
+            border-radius: var(--border-radius);
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-success {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #219653;
+        }
+
+        .btn-danger {
+            background-color: var(--error-color);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        table, th, td {
+            border: 1px solid #eee;
+        }
+
+        th, td {
+            padding: 15px;
+            text-align: left;
+        }
+
+        th {
+            background-color: var(--light-bg);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: rgba(52, 152, 219, 0.05);
+        }
+
+        .action-btn {
+            margin-right: 5px;
+            padding: 8px 12px;
+            font-size: 14px;
+        }
+
+        .login-icon {
+            display: inline-block;
+            position: relative;
+            width: 30px;
+            height: 20px;
+            margin-right: 10px;
+        }
+
+        @keyframes personMove {
+            0% { transform: translateX(-12px); opacity: 0; }
+            30% { opacity: 1; }
+            70% { transform: translateX(2px); opacity: 1; }
+            100% { transform: translateX(12px); opacity: 0; }
+        }
+        
+        @keyframes doorOpen {
+            0%, 20% { transform: perspective(400px) rotateY(0deg); }
+            60%, 100% { transform: perspective(400px) rotateY(-70deg); }
+        }
+        
+        .door {
+            position: absolute;
+            top: 0;
+            left: 8px;
+            width: 12px;
+            height: 20px;
+            background-color: white;
+            border: 1px solid rgba(255,255,255,0.7);
+            transform-origin: left center;
+            animation: doorOpen 2s infinite;
+        }
+        
+        .doorframe {
+            position: absolute;
+            top: 0;
+            left: 7px;
+            width: 14px;
+            height: 20px;
+            border: 1px solid rgba(255,255,255,0.9);
+        }
+        
+        .person {
+            position: absolute;
+            top: 2px;
+            font-size: 16px;
+            animation: personMove 2s infinite;
+        }
+
+        .error-message {
+            color: var(--error-color);
+            padding: 12px;
+            margin-top: 20px;
+            font-size: 15px;
+            font-weight: 500;
+            background-color: rgba(231, 76, 60, 0.1);
+            border-radius: var(--border-radius);
+        }
+
+        .success-message {
+            color: var(--success-color);
+            padding: 12px;
+            margin-top: 20px;
+            font-size: 15px;
+            font-weight: 500;
+            background-color: rgba(39, 174, 96, 0.1);
+            border-radius: var(--border-radius);
+        }
+
+        .status-tag {
+            padding: 5px 10px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-active {
+            background-color: rgba(39, 174, 96, 0.15);
+            color: var(--success-color);
+        }
+
+        .status-inactive {
+            background-color: rgba(231, 76, 60, 0.15);
+            color: var(--error-color);
+        }
+
+        @media (max-width: 992px) {
+            .content-wrapper {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .panel-box {
+                min-width: calc(50% - 20px);
+            }
+            
+            .modal-content {
+                width: 80%;
+            }
+        }
+
+        /* Device List */
+
+        /* Estilos para el contador de dispositivos */
+        .devices-stat-card {
+            border-left: 4px solid #3498db;
+        }
+
+        .device-status-container {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .device-status-item {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            padding: 6px 0;
+            border-radius: var(--border-radius);
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin: 0 10px;
+        }
+
+        .status-autorizado {
+            background-color: #27ae60;
+        }
+
+        .status-no-autorizado {
+            background-color: #e74c3c;
+        }
+
+        .status-desconocido {
+            background-color: #f39c12;
+        }
+
+        .status-label {
+            flex: 1;
+            color: var(--primary-color);
+            font-weight: 500;
+        }
+
+        .status-count {
+            margin-right: 10px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        /* Estilos para la vista de dispositivos */
+        .estado-autorizado {
+            background-color: rgba(39, 174, 96, 0.05);
+        }
+
+        .estado-autorizado td:first-child {
+            border-left: 4px solid #27ae60;
+        }
+
+        .estado-no-autorizado {
+            background-color: rgba(231, 76, 60, 0.05);
+        }
+
+        .estado-no-autorizado td:first-child {
+            border-left: 4px solid #e74c3c;
+        }
+
+        .estado-desconocido {
+            background-color: rgba(243, 156, 18, 0.05);
+        }
+
+        .estado-desconocido td:first-child {
+            border-left: 4px solid #f39c12;
+        }
+
+        /* Filtro de dispositivos */
+        .filtro-container {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            background-color: white;
+            padding: 12px 15px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+        }
+
+        .filtro-container label {
+            margin-bottom: 0;
+            margin-right: 10px;
+            white-space: nowrap;
+        }
+
+        .filtro-container select {
+            max-width: 200px;
+            padding: 8px 12px;
+        }
+        .device-list {
+            margin-top: 20px;
+        }
+
+        .traffic-card-full {
+            background-color: white;
+            padding: 25px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid var(--accent-color);
+            margin-bottom: 25px;
+        }
+
+        .traffic-content {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .traffic-chart-container {
+            flex: 2;
+            height: 200px;
+        }
+
+        .traffic-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .traffic-speed {
+            font-size: 32px;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .traffic-container {
+            display: flex;
+            align-items: center;
+            margin-top: 10px;
+        }
+        
+        .traffic-bar {
+            flex-grow: 1;
+            height: 20px;
+            background: linear-gradient(to right, #3498db, #2ecc71);
+            border-radius: 10px;
+            margin-right: 10px;
+        }
+        
+        .traffic-value {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        .pagination-button {
+            margin: 0 5px;
+        }
+
+        .protocol-http { 
+            border-left-color: #3498db; 
+        }
+
+        .protocol-voip { 
+            border-left-color: #2ecc71; 
+        }
+
+        .protocol-streaming {
+            border-left-color: #e74c3c; 
+        }
+
+        .protocol-other { 
+            border-left-color: #95a5a6; 
+        }
+
+        /* Estilos para alertas de tráfico */
+        .alert-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 400px;
+        }
+
+        .traffic-alert {
+            background-color: white;
+            border-radius: var(--border-radius);
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            animation: slideIn 0.3s ease-out;
+            border-left: 5px solid;
+        }
+
+        .traffic-alert.warning {
+            border-left-color: #f39c12;
+            background-color: #fff9f0;
+        }
+
+        .traffic-alert.critical {
+            border-left-color: #e74c3c;
+            background-color: #fff5f5;
+        }
+
+        .alert-icon {
+            font-size: 24px;
+        }
+
+        .alert-icon.warning {
+            color: #f39c12;
+        }
+
+        .alert-icon.critical {
+            color: #e74c3c;
+        }
+
+        .alert-content {
+            flex: 1;
+        }
+
+        .alert-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: var(--primary-color);
+        }
+
+        .alert-message {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .alert-close {
+            cursor: pointer;
+            font-size: 20px;
+            color: #999;
+            transition: color 0.3s;
+        }
+
+        .alert-close:hover {
+            color: #333;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+        /* Panel de configuración de umbrales */
+        .threshold-config {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+        }
+
+        .threshold-inputs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .threshold-input-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .threshold-input-group label {
+            margin-bottom: 5px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .threshold-input-group input {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+        }
+
+        .threshold-input-group input:focus {
+            border-color: var(--accent-color);
+            outline: none;
+        }
+
+        .qos-metric-card {
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid;
+            margin-bottom: 15px;
+        }
+
+        .qos-metric-card.excellent {
+            border-left-color: #27ae60;
+        }
+
+        .qos-metric-card.good {
+            border-left-color: #3498db;
+        }
+
+        .qos-metric-card.fair {
+            border-left-color: #f39c12;
+        }
+
+        .qos-metric-card.poor {
+            border-left-color: #e67e22;
+        }
+
+        .qos-metric-card.bad {
+            border-left-color: #e74c3c;
+        }
+
+        .qos-metric-label {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .qos-metric-value {
+            font-size: 28px;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .qos-metric-unit {
+            font-size: 16px;
+            color: #999;
+            margin-left: 5px;
+        }
+
+        .qos-status-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .qos-status-badge.excellent {
+            background-color: rgba(39, 174, 96, 0.15);
+            color: #27ae60;
+        }
+
+        .qos-status-badge.good {
+            background-color: rgba(52, 152, 219, 0.15);
+            color: #3498db;
+        }
+
+        .qos-status-badge.fair {
+            background-color: rgba(243, 156, 18, 0.15);
+            color: #f39c12;
+        }
+
+        .qos-status-badge.poor {
+            background-color: rgba(230, 126, 34, 0.15);
+            color: #e67e22;
+        }
+
+        .qos-status-badge.bad {
+            background-color: rgba(231, 76, 60, 0.15);
+            color: #e74c3c;
+        }
+
+        .qos-gauge {
+            width: 100%;
+            height: 20px;
+            background: linear-gradient(to right, #e74c3c 0%, #f39c12 50%, #27ae60 100%);
+            border-radius: 10px;
+            position: relative;
+            margin: 15px 0;
+        }
+
+        .qos-gauge-indicator {
+            position: absolute;
+            top: -5px;
+            width: 4px;
+            height: 30px;
+            background: #2c3e50;
+            border-radius: 2px;
+            transition: left 0.3s ease;
+        }
+
+        .qos-history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            transition: background 0.2s;
+        }
+
+        .qos-history-item:hover {
+            background: #f8f9fa;
+        }
+
+        .qos-comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Header -->
+    <div class="header">
+        <div class="logo-container">
+            <img src="/img/logo-shieldnet.svg" alt="Logo ShieldNet" style="height: 75px;">
+            <h1>ShieldNet</h1>
+        </div>
+        <div class="user-info">
+            <span>Bienvenido, Admin</span>
+            <a href="/logout" class="logout-btn">
+                <span class="login-icon">
+                    <span class="doorframe"></span>
+                    <span class="door"></span>
+                    <span class="person"><i class="fas fa-user"></i></span>
+                </span>
+                Cerrar sesión
+            </a>
+        </div>
+    </div>
+
+    <!-- Content Wrapper -->
+    <div class="content-wrapper">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <a href="#" class="nav-link active" id="dashboardBtn">
+                <i class="fas fa-tachometer-alt"></i> Panel Principal
+            </a>
+            <a href="#" class="nav-link" id="trafficBtn">
+                <i class="fas fa-chart-line"></i> Tráfico de Red
+            </a>
+            <a href="#" class="nav-link" id="usuariosBtn">
+                <i class="fas fa-users"></i> Gestión de Usuarios
+            </a>
+            <a href="#" class="nav-link" id="logsBtn">
+                <i class="fas fa-clipboard-list"></i> Logs de Actividad
+            </a>
+            <a href="#" class="nav-link" id="dispositivosBtn">
+            <i class="fas fa-network-wired"></i> Dispositivos Detectados
+            </a>
+            <a href="#" class="nav-link" id="voipBtn">
+                <i class="fas fa-phone-alt"></i> Telefonía VoIP
+            </a>
+            <a href="#" class="nav-link" id="qosBtn">
+                <i class="fas fa-heartbeat"></i> Calidad de Servicio (QoS)
+            </a>
+            <a href="#" class="nav-link" id="windowsServerBtn">
+                <i class="fas fa-server"></i> Windows Server 2022
+            </a>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent">
+            <h2>Panel Principal</h2>
+
+            <!-- Stats Cards -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <h3>Usuarios Registrados</h3>
+                    <div class="stat-value" id="userCount"></div>
+                </div>
+                <!-- Nueva tarjeta de Dispositivos Conectados -->
+        <div class="stat-card devices-stat-card">
+            <h3>Dispositivos Detectadoss</h3>
+            <div class="stat-value" id="totalDevices">0</div>
+            
+            <div class="device-status-container">
+                <div class="device-status-item">
+                    <span class="status-indicator status-autorizado"></span>
+                    <span class="status-label">Autorizados:</span>
+                    <span class="status-count" id="autorizadosCount">0</span>
+                </div>
+                <div class="device-status-item">
+                    <span class="status-indicator status-no-autorizado"></span>
+                    <span class="status-label">No Autorizados:</span>
+                    <span class="status-count" id="noAutorizadosCount">0</span>
+                </div>
+                <div class="device-status-item">
+                    <span class="status-indicator status-desconocido"></span>
+                    <span class="status-label">Desconocidos:</span>
+                    <span class="status-count" id="desconocidosCount">0</span>
+                </div>
+            </div>
+            </div>
+            </div>
+            <!-- Paneles de Funcionalidades -->
+            <div class="panel-container" id="panelPrincipal">
+                <div class="panel-box" onclick="openPingModal()">
+                    <i class="fas fa-podcast"></i>
+                    <h3>Hacer Ping</h3>
+                </div>
+                <div class="panel-box" onclick="openPortScanModal()">
+                    <i class="fas fa-plug"></i>
+                    <h3>Escanear Puertos</h3>
+                </div>
+            </div>
+        </div>
+    </div> <!-- Cierre de content-wrapper -->
+</div> <!-- Cierre de container -->
+
+<!-- Contenedor de alertas -->
+<div class="alert-container" id="alertContainer"></div>
+<!-- Modal Ping -->
+<div class="modal" id="pingModal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closePingModal()">&times;</span>
+        <h3>Hacer Ping</h3>
+        <form id="pingForm">
+            <div class="form-group">
+                <label for="ipAddress">IP o Dominio</label>
+                <input type="text" id="ipAddress" name="ipAddress" placeholder="Ingrese una IP o dominio" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Enviar Ping</button>
+        </form>
+        <div id="pingResult" style="margin-top: 20px; display: none;">
+            <h4>Resultado:</h4>
+            <pre id="pingOutput" style="background-color: #f5f5f5; padding: 15px; border-radius: 8px; margin-top: 10px;"></pre>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Escanear Puertos -->
+<div class="modal" id="portScanModal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closePortScanModal()">&times;</span>
+        <h3>Escanear Puertos</h3>
+        <form id="portScanForm">
+            <div class="form-group">
+                <label for="ipAddressScan">IP o Dominio</label>
+                <input type="text" id="ipAddressScan" name="ipAddressScan" placeholder="Ingrese una IP o dominio" required>
+            </div>
+            <div class="form-group">
+                <label for="portRange">Rango de Puertos (ej. 1-100)</label>
+                <input type="text" id="portRange" name="portRange" value="1-1000" placeholder="Ingrese el rango de puertos">
+            </div>
+            <button type="submit" class="btn btn-primary">Escanear</button>
+        </form>
+        <div id="scanResult" style="margin-top: 20px; display: none;">
+            <h4>Resultado del Escaneo:</h4>
+            <pre id="scanOutput" style="background-color: #f5f5f5; padding: 15px; border-radius: 8px; margin-top: 10px;"></pre>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Crear Usuario -->
+<div class="modal" id="createUserModal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeCreateUserModal()">&times;</span>
+        <h3>Crear Nuevo Usuario</h3>
+        <form id="createUserForm">
+            <div class="form-group">
+                <label for="newUsername">Nombre de usuario</label>
+                <input type="text" id="newUsername" name="username" placeholder="Nombre de usuario" required>
+            </div>
+            <div class="form-group">
+                <label for="newPassword">Contraseña</label>
+                <input type="password" id="newPassword" name="password" placeholder="Contraseña" required>
+            </div>
+            <div class="form-group">
+                <label for="newNombre">Nombre</label>
+                <input type="text" id="newNombre" name="nombre" placeholder="Nombre" required>
+            </div>
+            <div class="form-group">
+                <label for="newApellido">Apellido</label>
+                <input type="text" id="newApellido" name="apellido" placeholder="Apellido" required>
+            </div>
+            <div class="form-group">
+                <label for="newEmail">Email</label>
+                <input type="email" id="newEmail" name="email" placeholder="Email" required>
+            </div>
+            <div class="form-group">
+                <label for="newRol">Rol</label>
+                <select id="newRol" name="roles" required>
+                    <option value="ROLE_USER">Usuario</option>
+                    <option value="ROLE_ADMIN">Administrador</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success">Crear Usuario</button>
+        </form>
+        <div id="createUserResult" class="success-message" style="display: none;"></div>
+    </div>
+</div>
+
+<!-- Modal Eliminar Usuario -->
+<div class="modal" id="deleteUserModal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeDeleteUserModal()">&times;</span>
+        <h3>Eliminar Usuario</h3>
+        <p>¿Está seguro que desea eliminar el usuario <span id="deleteUserName"></span>?</p>
+        <div style="display: flex; justify-content: space-between; margin-top: 25px;">
+            <button class="btn btn-primary" onclick="closeDeleteUserModal()">Cancelar</button>
+            <button class="btn btn-danger" onclick="confirmDeleteUser()">Eliminar</button>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Editar Usuario -->
+<div class="modal" id="editUserModal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeEditUserModal()">&times;</span>
+        <h3>✏️ Editar Usuario</h3>
+        <form id="editUserForm" onsubmit="event.preventDefault(); updateUser();">
+            <div class="form-group">
+                <label for="editUsername">Nombre de usuario</label>
+                <input type="text" id="editUsername" name="username" placeholder="Nombre de usuario" required>
+            </div>
+            <div class="form-group">
+                <label for="editPassword">Nueva Contraseña (dejar vacío para no cambiar)</label>
+                <input type="password" id="editPassword" name="password" placeholder="Nueva contraseña (opcional)">
+            </div>
+            <div class="form-group">
+                <label for="editNombre">Nombre</label>
+                <input type="text" id="editNombre" name="nombre" placeholder="Nombre" required>
+            </div>
+            <div class="form-group">
+                <label for="editApellido">Apellido</label>
+                <input type="text" id="editApellido" name="apellido" placeholder="Apellido" required>
+            </div>
+            <div class="form-group">
+                <label for="editEmail">Email</label>
+                <input type="email" id="editEmail" name="email" placeholder="Email" required>
+            </div>
+            <div class="form-group">
+                <label for="editRol">Rol</label>
+                <select id="editRol" name="roles" required>
+                    <option value="ROLE_USER">Usuario</option>
+                    <option value="ROLE_ADMIN">Administrador</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Guardar Cambios
+            </button>
+        </form>
+        <div id="editUserResult" class="success-message" style="display: none;"></div>
+    </div>
+</div>
+
+<!-- Modal Medición QoS -->
+<div class="modal" id="qosModal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeQoSModal()">&times;</span>
+        <h3>📊 Medición de Calidad de Servicio (QoS)</h3>
+        <form id="qosForm">
+            <div class="form-group">
+                <label for="qosIpAddress">IP o Dominio a Analizar</label>
+                <input type="text" id="qosIpAddress" name="qosIpAddress" placeholder="Ej: 192.168.1.1 o google.com" required>
+            </div>
+            <div class="form-group">
+                <label for="qosPackets">Cantidad de Paquetes (10-50)</label>
+                <input type="number" id="qosPackets" name="qosPackets" value="20" min="10" max="50" placeholder="20">
+            </div>
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-play"></i> Iniciar Medición
+            </button>
+        </form>
+        <div id="qosResult" style="margin-top: 20px; display: none;">
+            <h4>📈 Resultados:</h4>
+            <div id="qosOutput" style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin-top: 10px;"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentPage = 1;
+    const logsPerPage = 5;
+    let currentLogFilter = 'todos';
+    let eventSource = null;
+
+    let currentQoSPage = 1;
+    const qosPerPage = 5;
+    let allQoSMetrics = [];
+
+    let users = [];
+    let logsActividad = []; // AGREGAR ESTA LÍNEA
+
+    // Inicializar la aplicación cuando el DOM esté cargado
+document.addEventListener('DOMContentLoaded', function() {
+    // Cargar datos iniciales desde la base de datos
+    loadUsersFromDatabase();
+    loadDevicesFromDatabase();
+    loadActivityLogs();
+    
+    // Event listeners para navegación
+    document.getElementById('dashboardBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        loadDashboard();
+    });
+
+    document.getElementById('trafficBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        loadTrafficView();
+    });
+
+    document.getElementById('windowsServerBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        loadWindowsServerView();
+    });
+    
+    document.getElementById('usuariosBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        loadUserManagement();
+    });
+    
+    document.getElementById('logsBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        loadLogs();
+    });
+
+    document.getElementById('dispositivosBtn').addEventListener('click', function(e) {
+    e.preventDefault();
+    loadDispositivosView();
+});
+    
+    document.getElementById('pingForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        executePing();
+    });
+    
+    document.getElementById('portScanForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        executePortScan();
+    });
+    
+    document.getElementById('createUserForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        createUser();
+    });
+
+    document.getElementById('voipBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        loadVoIPView();
+    });
+
+    document.getElementById('qosBtn').addEventListener('click', function(e) {
+        e.preventDefault();
+        loadQoSView();
+    });
+
+    // Event listener para el formulario de medición QoS
+    document.getElementById('qosForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        executeQoSMeasurement();
+    });
+        
+    // Inicializar monitoreo de red
+    initNetworkMonitoring();
+});
+
+    // Funciones para modales
+    function openPingModal() {
+        document.getElementById('pingModal').style.display = 'block';
+    }
+
+    function closePingModal() {
+        document.getElementById('pingModal').style.display = 'none';
+    }
+
+    function openPortScanModal() {
+        document.getElementById('portScanModal').style.display = 'block';
+    }
+
+    function closePortScanModal() {
+        document.getElementById('portScanModal').style.display = 'none';
+    }
+
+    function openCreateUserModal() {
+        document.getElementById('createUserModal').style.display = 'block';
+        document.getElementById('createUserResult').style.display = 'none';
+        document.getElementById('createUserForm').reset();
+    }
+
+    function closeCreateUserModal() {
+        document.getElementById('createUserModal').style.display = 'none';
+    }
+
+    function openDeleteUserModal(userId, userName) {
+        currentUserId = userId;
+        document.getElementById('deleteUserName').textContent = userName;
+        document.getElementById('deleteUserModal').style.display = 'block';
+    }
+
+    function closeDeleteUserModal() {
+        document.getElementById('deleteUserModal').style.display = 'none';
+    }
+
+    // Cargar contenido del panel principal
+    // Cargar contenido del panel principal
+    function loadDashboard() {
+        // Cambiar el contenido principal
+        document.getElementById('mainContent').innerHTML = `
+            <h2>Panel Principal</h2>
+
+            <!-- Stats Cards -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <h3>Usuarios Registrados</h3>
+                    <div class="stat-value" id="userCount"></div>
+                </div>
+                <!-- Nueva tarjeta de Dispositivos Conectados -->
+        <div class="stat-card devices-stat-card">
+            <h3>Dispositivos Detectadoss</h3>
+            <div class="stat-value" id="totalDevices">0</div>
+            
+            <div class="device-status-container">
+                <div class="device-status-item">
+                    <span class="status-indicator status-autorizado"></span>
+                    <span class="status-label">Autorizados:</span>
+                    <span class="status-count" id="autorizadosCount">0</span>
+                </div>
+                <div class="device-status-item">
+                    <span class="status-indicator status-no-autorizado"></span>
+                    <span class="status-label">No Autorizados:</span>
+                    <span class="status-count" id="noAutorizadosCount">0</span>
+                </div>
+                <div class="device-status-item">
+                    <span class="status-indicator status-desconocido"></span>
+                    <span class="status-label">Desconocidos:</span>
+                    <span class="status-count" id="desconocidosCount">0</span>
+                </div>
+            </div>
+            </div>
+            </div>
+            <!-- Paneles de Funcionalidades -->
+            <div class="panel-container" id="panelPrincipal">
+                <div class="panel-box" onclick="openPingModal()">
+                    <i class="fas fa-podcast"></i>
+                    <h3>Hacer Ping</h3>
+                </div>
+                <div class="panel-box" onclick="openPortScanModal()">
+                    <i class="fas fa-plug"></i>
+                    <h3>Escanear Puertos</h3>
+                </div>
+            </div>
+        </div>
+        `;
+        
+        // Actualizar enlaces de navegación
+        updateNavLinks('dashboardBtn');
+        
+        // Actualizar datos
+        updateDeviceTable();
+        updateStatCounts();
+        loadDeviceCount();
+    }
+
+    // Cargar vista de tráfico de red
+function loadTrafficView() {
+    document.getElementById('mainContent').innerHTML = `
+        <h2>Monitoreo de Tráfico de Red</h2>
+        
+        <!-- Panel de configuración de umbrales -->
+        <div class="threshold-config">
+            <h3 style="margin-bottom: 10px;">⚙️ Configuración de Alertas</h3>
+            <p style="font-size: 14px; color: #666; margin-bottom: 15px;">
+                Define los umbrales de tráfico para recibir alertas automáticas
+            </p>
+            <div class="threshold-inputs">
+                <div class="threshold-input-group">
+                    <label>⚠️ Umbral de Advertencia (MB/s)</label>
+                    <input type="number" id="warningThreshold" value="5" min="0" step="0.5" />
+                </div>
+                <div class="threshold-input-group">
+                    <label>🚨 Umbral Crítico (MB/s)</label>
+                    <input type="number" id="criticalThreshold" value="10" min="0" step="0.5" />
+                </div>
+            </div>
+            <button onclick="updateThresholds()" class="btn btn-primary" style="margin-top: 15px;">
+                <i class="fas fa-save"></i> Guardar Configuración
+            </button>
+        </div>
+
+        <div class="traffic-card-full">
+            <h3>Tráfico por Protocolo</h3>
+            <div style="position: relative; height: 300px; margin: 15px 0;">
+                <canvas id="protocolChart"></canvas>
+            </div>
+            
+            <div class="traffic-actions" style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+                <button onclick="resetTrafficCounter()" class="btn btn-primary">
+                    <i class="fas fa-redo"></i> Reiniciar Contador
+                </button>
+                <button onclick="stopTrafficCapture()" class="btn btn-danger">
+                    <i class="fas fa-stop"></i> Detener Monitoreo
+                </button>
+                <button onclick="startTrafficCapture()" class="btn btn-success">
+                    <i class="fas fa-play"></i> Iniciar Monitoreo
+                </button>
+            </div>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-card protocol-http">
+                <h3>HTTP/HTTPS</h3>
+                <div class="stat-value" id="httpSpeed">0.00 MB/s</div>
+            </div>
+            <div class="stat-card protocol-voip">
+                <h3>VoIP</h3>
+                <div class="stat-value" id="voipSpeed">0.00 MB/s</div>
+            </div>
+            <div class="stat-card protocol-streaming">
+                <h3>Streaming</h3>
+                <div class="stat-value" id="streamingSpeed">0.00 MB/s</div>
+            </div>
+            <div class="stat-card protocol-other">
+                <h3>Otros</h3>
+                <div class="stat-value" id="otherSpeed">0.00 MB/s</div>
+            </div>
+        </div>
+    `;
+    
+    // Actualizar enlaces de navegación
+    updateNavLinks('trafficBtn');
+    
+    // Inicializar el monitoreo de red
+    setTimeout(function() {
+        initNetworkMonitoring();
+        loadThresholds();
+        initProtocolChart(); 
+    }, 100);
+}
+
+// Función para cargar la vista de QoS
+function loadQoSView() {
+    document.getElementById('mainContent').innerHTML = `
+        <h2>📊 Análisis de Calidad de Servicio (QoS)</h2>
+        
+        <!-- Tarjeta de promedio MOS -->
+        <div class="stat-card" style="margin-bottom: 20px; border-left-color: #3498db;">
+            <h3>🏆 Promedio MOS Score (24 horas)</h3>
+            <div class="stat-value" id="averageMosScore">Cargando...</div>
+            <p style="font-size: 14px; color: #666; margin-top: 10px;">
+                MOS: Mean Opinion Score (1.0 = Malo, 5.0 = Excelente)
+            </p>
+        </div>
+
+        <!-- Botón para nueva medición -->
+        <button onclick="openQoSModal()" class="btn btn-success" style="margin-bottom: 20px;">
+            <i class="fas fa-plus-circle"></i> Nueva Medición QoS
+        </button>
+
+        <!-- Métricas actuales -->
+        <div id="currentQoSMetrics" style="margin-bottom: 30px;">
+            <h3>📈 Última Medición</h3>
+            <div id="latestQoSData">
+                <p style="text-align: center; color: #999; padding: 40px;">
+                    No hay mediciones recientes. Haz clic en "Nueva Medición QoS" para comenzar.
+                </p>
+            </div>
+        </div>
+
+        <!-- Historial de mediciones CON PAGINACIÓN -->
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h3>📋 Historial de Mediciones</h3>
+                <button onclick="refreshQoSHistory()" class="btn btn-primary">
+                    <i class="fas fa-sync-alt"></i> Actualizar
+                </button>
+            </div>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>IP</th>
+                        <th>Fecha/Hora</th>
+                        <th>Latencia (ms)</th>
+                        <th>Jitter (ms)</th>
+                        <th>Pérdida (%)</th>
+                        <th>MOS Score</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="qosHistoryTableBody">
+                    <tr><td colspan="7" style="text-align: center;">Cargando...</td></tr>
+                </tbody>
+            </table>
+            
+            <!-- Paginación -->
+            <div id="qosPaginationContainer" style="margin-top: 15px; text-align: center;"></div>
+        </div>
+    `;
+    
+    // Actualizar navegación
+    updateNavLinks('qosBtn');
+    
+    // Cargar datos iniciales
+    loadAverageMos();
+    loadLatestQoS();
+    loadQoSHistory();
+}
+
+// Cargar historial de QoS con paginación
+function loadQoSHistory() {
+    fetch('/api/network/qos/latest')
+        .then(response => response.json())
+        .then(data => {
+            // Guardar todas las métricas
+            allQoSMetrics = data;
+            
+            // Renderizar la primera página
+            renderQoSHistoryPage();
+        })
+        .catch(error => {
+            console.error('Error al cargar historial QoS:', error);
+            const tableBody = document.getElementById('qosHistoryTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #e74c3c;">Error al cargar historial</td></tr>';
+            }
+        });
+}
+
+// Renderizar página actual del historial QoS
+function renderQoSHistoryPage() {
+    const tableBody = document.getElementById('qosHistoryTableBody');
+    const paginationContainer = document.getElementById('qosPaginationContainer');
+    
+    if (!tableBody || !paginationContainer) return;
+    
+    // Si no hay datos
+    if (allQoSMetrics.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No hay mediciones registradas</td></tr>';
+        paginationContainer.innerHTML = '';
+        return;
+    }
+    
+    // 1. Calcular paginación
+    const totalPages = Math.ceil(allQoSMetrics.length / qosPerPage);
+    const start = (currentQoSPage - 1) * qosPerPage;
+    const end = start + qosPerPage;
+    const metricsToShow = allQoSMetrics.slice(start, end);
+    
+    // 2. Generar HTML de la tabla
+    let html = '';
+    metricsToShow.forEach(metric => {
+        const statusClass = metric.qualityStatus.toLowerCase();
+        const timestamp = formatDateTime(metric.timestamp);
+        
+        // Emojis según estado
+        const statusEmoji = {
+            'excellent': '🟢',
+            'good': '🔵',
+            'fair': '🟡',
+            'poor': '🟠',
+            'bad': '🔴'
+        };
+        
+        const emoji = statusEmoji[statusClass] || '⚪';
+        
+        html += `
+            <tr>
+                <td><strong>${metric.targetIp}</strong></td>
+                <td>${timestamp}</td>
+                <td>${metric.latencyMs.toFixed(2)} ms</td>
+                <td>${metric.jitterMs.toFixed(2)} ms</td>
+                <td>${metric.packetLossPercent.toFixed(2)} %</td>
+                <td><strong>${metric.mosScore.toFixed(2)}</strong></td>
+                <td><span class="qos-status-badge ${statusClass}">${emoji} ${metric.qualityStatus}</span></td>
+            </tr>
+        `;
+    });
+    
+    tableBody.innerHTML = html;
+    
+    // 3. Renderizar botones de paginación
+    let paginationHTML = '';
+    
+    // Información de página actual
+    paginationHTML += `
+        <span style="margin-right: 15px; color: #666; font-size: 14px;">
+            Mostrando ${start + 1}-${Math.min(end, allQoSMetrics.length)} de ${allQoSMetrics.length} mediciones
+        </span>
+    `;
+    
+    // Botón "Primera"
+    if (currentQoSPage > 1) {
+        paginationHTML += `<button onclick="changeQoSPage(1)" class="btn pagination-button" title="Primera página">
+            <i class="fas fa-angle-double-left"></i>
+        </button>`;
+    }
+    
+    // Botón "Anterior"
+    if (currentQoSPage > 1) {
+        paginationHTML += `<button onclick="changeQoSPage(${currentQoSPage - 1})" class="btn pagination-button">
+            <i class="fas fa-angle-left"></i> Anterior
+        </button>`;
+    }
+    
+    // Botones numerados (máximo 5 botones visibles)
+    const maxButtons = 5;
+    let startPage = Math.max(1, currentQoSPage - Math.floor(maxButtons / 2));
+    let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+    
+    // Ajustar si estamos cerca del final
+    if (endPage - startPage < maxButtons - 1) {
+        startPage = Math.max(1, endPage - maxButtons + 1);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        const activeClass = i === currentQoSPage ? 'btn-primary' : '';
+        paginationHTML += `<button onclick="changeQoSPage(${i})" class="btn pagination-button ${activeClass}">${i}</button>`;
+    }
+    
+    // Botón "Siguiente"
+    if (currentQoSPage < totalPages) {
+        paginationHTML += `<button onclick="changeQoSPage(${currentQoSPage + 1})" class="btn pagination-button">
+            Siguiente <i class="fas fa-angle-right"></i>
+        </button>`;
+    }
+    
+    // Botón "Última"
+    if (currentQoSPage < totalPages) {
+        paginationHTML += `<button onclick="changeQoSPage(${totalPages})" class="btn pagination-button" title="Última página">
+            <i class="fas fa-angle-double-right"></i>
+        </button>`;
+    }
+    
+    paginationContainer.innerHTML = paginationHTML;
+}
+
+// Cambiar de página en el historial QoS
+function changeQoSPage(page) {
+    currentQoSPage = page;
+    renderQoSHistoryPage();
+    
+    // Scroll suave hacia la tabla
+    const table = document.querySelector('#qosHistoryTableBody');
+    if (table) {
+        table.parentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+// Refrescar historial (resetear a página 1)
+function refreshQoSHistory() {
+    currentQoSPage = 1;
+    loadQoSHistory();
+    showTemporaryMessage('✓ Historial actualizado');
+}
+
+// Función auxiliar para formatear fecha/hora
+function formatDateTime(timestamp) {
+    if (!timestamp) return '-';
+    
+    const date = new Date(timestamp);
+    
+    // Formato: 15/11/2025, 4:12:28 p.m.
+    return date.toLocaleString('es-CO', {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+    });
+}
+
+// ============================================================
+// MANTENER TODAS LAS DEMÁS FUNCIONES QoS SIN CAMBIOS
+// ============================================================
+
+// Función para abrir el modal de medición QoS
+function openQoSModal() {
+    document.getElementById('qosModal').style.display = 'block';
+    document.getElementById('qosResult').style.display = 'none';
+    document.getElementById('qosForm').reset();
+}
+
+// Función para cerrar el modal de medición QoS
+function closeQoSModal() {
+    document.getElementById('qosModal').style.display = 'none';
+}
+
+// Función para ejecutar medición QoS
+function executeQoSMeasurement() {
+    const ip = document.getElementById('qosIpAddress').value;
+    const packets = document.getElementById('qosPackets').value;
+    const qosOutput = document.getElementById('qosOutput');
+    const qosResult = document.getElementById('qosResult');
+    
+    if (!ip) {
+        alert('Por favor, ingrese una IP o dominio válido');
+        return;
+    }
+    
+    // Mostrar cargando
+    qosOutput.innerHTML = `
+        <div style="text-align: center; padding: 20px;">
+            <i class="fas fa-spinner fa-spin" style="font-size: 40px; color: #3498db;"></i>
+            <p style="margin-top: 15px; font-size: 16px;">Midiendo calidad de servicio a ${ip}...</p>
+            <p style="color: #666; font-size: 14px;">Esto puede tomar ${packets * 0.5} segundos</p>
+        </div>
+    `;
+    qosResult.style.display = 'block';
+    
+    // Llamar a la API
+    fetch('/api/network/qos/measure', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+            ip: ip,
+            packets: packets
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error en la respuesta del servidor');
+        }
+        return response.json();
+    })
+    .then(data => {
+        displayQoSResults(data);
+        // Recargar historial (resetear a página 1)
+        if (document.getElementById('qosHistoryTableBody')) {
+            currentQoSPage = 1;
+            loadQoSHistory();
+        }
+        // Actualizar promedio
+        if (document.getElementById('averageMosScore')) {
+            loadAverageMos();
+        }
+    })
+    .catch(error => {
+        qosOutput.innerHTML = `
+            <div style="text-align: center; padding: 20px; color: #e74c3c;">
+                <i class="fas fa-exclamation-triangle" style="font-size: 40px;"></i>
+                <p style="margin-top: 15px;">Error al medir QoS: ${error.message}</p>
+            </div>
+        `;
+    });
+}
+
+// Función para mostrar resultados QoS
+function displayQoSResults(data) {
+    const qosOutput = document.getElementById('qosOutput');
+    const statusClass = data.qualityStatus.toLowerCase();
+    
+    const statusEmoji = {
+        'excellent': '🟢',
+        'good': '🔵',
+        'fair': '🟡',
+        'poor': '🟠',
+        'bad': '🔴'
+    };
+    
+    const statusText = {
+        'excellent': 'Excelente',
+        'good': 'Bueno',
+        'fair': 'Aceptable',
+        'poor': 'Pobre',
+        'bad': 'Malo'
+    };
+    
+    qosOutput.innerHTML = `
+        <div class="qos-comparison-grid">
+            <!-- Latencia -->
+            <div class="qos-metric-card ${statusClass}">
+                <div class="qos-metric-label">⏱️ Latencia</div>
+                <div class="qos-metric-value">
+                    ${data.latencyMs.toFixed(2)}
+                    <span class="qos-metric-unit">ms</span>
+                </div>
+                <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                    ${getLatencyStatus(data.latencyMs)}
+                </div>
+            </div>
+            
+            <!-- Jitter -->
+            <div class="qos-metric-card ${statusClass}">
+                <div class="qos-metric-label">📊 Jitter</div>
+                <div class="qos-metric-value">
+                    ${data.jitterMs.toFixed(2)}
+                    <span class="qos-metric-unit">ms</span>
+                </div>
+                <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                    ${getJitterStatus(data.jitterMs)}
+                </div>
+            </div>
+            
+            <!-- Pérdida de Paquetes -->
+            <div class="qos-metric-card ${statusClass}">
+                <div class="qos-metric-label">📉 Pérdida de Paquetes</div>
+                <div class="qos-metric-value">
+                    ${data.packetLossPercent.toFixed(2)}
+                    <span class="qos-metric-unit">%</span>
+                </div>
+                <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                    ${getPacketLossStatus(data.packetLossPercent)}
+                </div>
+            </div>
+            
+            <!-- MOS Score -->
+            <div class="qos-metric-card ${statusClass}">
+                <div class="qos-metric-label">🏆 MOS Score</div>
+                <div class="qos-metric-value">
+                    ${data.mosScore.toFixed(2)}
+                    <span class="qos-metric-unit">/ 5.0</span>
+                </div>
+                <span class="qos-status-badge ${statusClass}">
+                    ${statusEmoji[statusClass]} ${statusText[statusClass]}
+                </span>
+            </div>
+        </div>
+        
+        <!-- Estadísticas adicionales -->
+        <div style="margin-top: 20px; padding: 15px; background: #f8f9fa; border-radius: 8px;">
+            <h4 style="margin-bottom: 10px;">📦 Estadísticas de Paquetes</h4>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px;">
+                <div>
+                    <strong>Enviados:</strong> ${data.packetsSent}
+                </div>
+                <div>
+                    <strong>Recibidos:</strong> ${data.packetsReceived}
+                </div>
+                <div>
+                    <strong>Perdidos:</strong> <span style="color: #e74c3c;">${data.packetsLost}</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Interpretación -->
+        <div style="margin-top: 20px; padding: 15px; background: #e8f5e9; border-radius: 8px; border-left: 4px solid #27ae60;">
+            <h4 style="margin-bottom: 10px;">💡 Interpretación</h4>
+            <p style="margin: 0; line-height: 1.6;">
+                ${getQoSInterpretation(data)}
+            </p>
+        </div>
+    `;
+}
+
+// Funciones auxiliares para estados
+function getLatencyStatus(latency) {
+    if (latency < 50) return '✅ Excelente para VoIP';
+    if (latency < 150) return '✅ Bueno para VoIP';
+    if (latency < 200) return '⚠️ Aceptable';
+    return '❌ No recomendado para VoIP';
+}
+
+function getJitterStatus(jitter) {
+    if (jitter < 10) return '✅ Muy estable';
+    if (jitter < 30) return '✅ Estable';
+    if (jitter < 50) return '⚠️ Moderado';
+    return '❌ Inestable';
+}
+
+function getPacketLossStatus(loss) {
+    if (loss < 0.5) return '✅ Excelente';
+    if (loss < 1) return '✅ Bueno';
+    if (loss < 3) return '⚠️ Aceptable';
+    return '❌ Problemático';
+}
+
+function getQoSInterpretation(data) {
+    const status = data.qualityStatus.toUpperCase();
+    
+    if (status === 'EXCELLENT' || status === 'GOOD') {
+        return `La conexión tiene una calidad ${status === 'EXCELLENT' ? 'excelente' : 'buena'}, ideal para llamadas VoIP, videollamadas y aplicaciones en tiempo real sin problemas.`;
+    } else if (status === 'FAIR') {
+        return 'La conexión es aceptable para uso general, pero podría experimentar problemas menores en llamadas VoIP de alta calidad.';
+    } else if (status === 'POOR') {
+        return 'La conexión tiene calidad pobre. Se recomienda investigar problemas de red. Las llamadas VoIP pueden tener interrupciones.';
+    } else {
+        return '⚠️ La conexión tiene calidad muy pobre. No se recomienda para aplicaciones en tiempo real. Revise su conexión de red inmediatamente.';
+    }
+}
+
+// Cargar promedio de MOS
+function loadAverageMos() {
+    fetch('/api/network/qos/mos-average')
+        .then(response => response.json())
+        .then(data => {
+            const element = document.getElementById('averageMosScore');
+            if (element) {
+                const avgMos = data.averageMos || 0;
+                element.textContent = avgMos > 0 ? avgMos.toFixed(2) + ' / 5.0' : 'Sin datos';
+                
+                // Cambiar color según el valor
+                if (avgMos >= 4.3) {
+                    element.style.color = '#27ae60';
+                } else if (avgMos >= 4.0) {
+                    element.style.color = '#3498db';
+                } else if (avgMos >= 3.6) {
+                    element.style.color = '#f39c12';
+                } else {
+                    element.style.color = '#e74c3c';
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error al cargar promedio MOS:', error);
+            const element = document.getElementById('averageMosScore');
+            if (element) {
+                element.textContent = 'Error';
+            }
+        });
+}
+
+// Cargar última medición
+function loadLatestQoS() {
+    fetch('/api/network/qos/latest')
+        .then(response => response.json())
+        .then(data => {
+            if (data.length > 0) {
+                const latest = data[0];
+                displayLatestQoSData(latest);
+            }
+        })
+        .catch(error => {
+            console.error('Error al cargar última medición:', error);
+        });
+}
+
+// Mostrar última medición en el dashboard
+function displayLatestQoSData(data) {
+    const container = document.getElementById('latestQoSData');
+    if (!container) return;
+    
+    const statusClass = data.qualityStatus.toLowerCase();
+    
+    container.innerHTML = `
+        <div class="qos-comparison-grid">
+            <div class="qos-metric-card ${statusClass}">
+                <div class="qos-metric-label">🌐 IP</div>
+                <div style="font-size: 18px; font-weight: bold; margin-top: 5px;">${data.targetIp}</div>
+            </div>
+            <div class="qos-metric-card ${statusClass}">
+                <div class="qos-metric-label">⏱️ Latencia</div>
+                <div class="qos-metric-value">${data.latencyMs.toFixed(2)} <span class="qos-metric-unit">ms</span></div>
+            </div>
+            <div class="qos-metric-card ${statusClass}">
+                <div class="qos-metric-label">📊 Jitter</div>
+                <div class="qos-metric-value">${data.jitterMs.toFixed(2)} <span class="qos-metric-unit">ms</span></div>
+            </div>
+            <div class="qos-metric-card ${statusClass}">
+                <div class="qos-metric-label">🏆 MOS Score</div>
+                <div class="qos-metric-value">${data.mosScore.toFixed(2)} <span class="qos-metric-unit">/ 5.0</span></div>
+            </div>
+        </div>
+    `;
+}
+
+// Cargar comparación
+fetch('/api/network/qos/comparison')
+    .then(response => response.json())
+    .then(data => {
+        console.log('Comparación QoS:', data);
+        // Mostrar en el dashboard:
+        // - MOS promedio durante llamadas: data.averageMosDuringCalls
+        // - MOS promedio sin llamadas: data.averageMosWithoutCalls
+        // - Mediciones durante llamadas: data.measurementsDuringCalls
+    });
+
+    function loadWindowsServerView() {
+    document.getElementById('mainContent').innerHTML = `
+        <h2>🪟 Monitoreo de Windows Server 2022</h2>
+        
+        <!-- Estado del Servidor -->
+        <div class="stat-card" style="margin-bottom: 20px; border-left-color: #0078d4;">
+            <h3>Estado del Servidor</h3>
+            <div class="stat-value" id="windowsServerStatus">Verificando...</div>
+            <div id="windowsServerIp" style="font-size: 14px; color: #666; margin-top: 10px;"></div>
+        </div>
+        
+        <!-- Servicios de Windows -->
+        <div style="margin-top: 30px;">
+            <h3>📋 Servicios Monitoreados</h3>
+            <button onclick="refreshWindowsServices()" class="btn btn-primary" style="margin-bottom: 15px;">
+                <i class="fas fa-sync-alt"></i> Actualizar
+            </button>
+            <div id="windowsServicesContainer">
+                <p style="text-align: center; color: #666;">Cargando servicios...</p>
+            </div>
+        </div>
+        
+        <!-- Recursos del Sistema -->
+        <div style="margin-top: 30px;">
+            <h3>💻 Recursos del Sistema</h3>
+            <div class="stats-container" id="windowsResourcesContainer">
+                <div class="stat-card">
+                    <h3>CPU</h3>
+                    <div class="stat-value" id="windowsCpu">-</div>
+                </div>
+                <div class="stat-card">
+                    <h3>RAM</h3>
+                    <div class="stat-value" id="windowsRam">-</div>
+                </div>
+            </div>
+        </div>
+    `;
+    
+    updateNavLinks('windowsServerBtn');
+    
+    // Cargar datos
+    loadWindowsServerStatus();
+    loadWindowsServices();
+    loadWindowsResources();
+}
+
+function loadWindowsServerStatus() {
+    fetch('/api/windows-server/status')
+        .then(response => response.json())
+        .then(data => {
+            const statusEl = document.getElementById('windowsServerStatus');
+            const ipEl = document.getElementById('windowsServerIp');
+            
+            if (statusEl) {
+                if (data.status === 'ONLINE') {
+                    statusEl.textContent = '🟢 En Línea';
+                    statusEl.style.color = '#27ae60';
+                } else {
+                    statusEl.textContent = '🔴 Fuera de Línea';
+                    statusEl.style.color = '#e74c3c';
+                }
+            }
+            
+            if (ipEl && data.serverIp) {
+                ipEl.textContent = 'IP: ' + data.serverIp;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+}
+
+function loadWindowsServices() {
+    fetch('/api/windows-server/services')
+        .then(response => response.json())
+        .then(data => {
+            // Implementar visualización de servicios
+            console.log('Servicios:', data);
+        });
+}
+
+function loadWindowsResources() {
+    fetch('/api/windows-server/resources')
+        .then(response => response.json())
+        .then(data => {
+            updateElement('windowsCpu', data.cpuUsage);
+            updateElement('windowsRam', data.ramUsage);
+        });
+}
+
+function refreshWindowsServices() {
+    loadWindowsServices();
+    showTemporaryMessage('✓ Servicios actualizados');
+}
+
+// Función para cargar la vista de VoIP
+function loadVoIPView() {
+    document.getElementById('mainContent').innerHTML = `
+        <h2>📞 Telefonía VoIP - Monitoreo Asterisk</h2>
+        
+        <!-- Estado del Servidor -->
+        <div class="stat-card" style="margin-bottom: 20px; border-left-color: #27ae60;">
+            <h3>Estado del Servidor Asterisk</h3>
+            <div class="stat-value" id="asteriskStatus">Verificando...</div>
+            <div id="asteriskVersion" style="font-size: 14px; color: #666; margin-top: 10px;"></div>
+        </div>
+
+        <!-- Estadísticas Generales -->
+        <div class="stats-container">
+            <div class="stat-card" style="border-left-color: #3498db;">
+                <h3>Extensiones Totales</h3>
+                <div class="stat-value" id="totalExtensions">0</div>
+            </div>
+            <div class="stat-card" style="border-left-color: #27ae60;">
+                <h3>Extensiones En Línea</h3>
+                <div class="stat-value" id="onlineExtensions">0</div>
+            </div>
+            <div class="stat-card" style="border-left-color: #e74c3c;">
+                <h3>Extensiones Fuera de Línea</h3>
+                <div class="stat-value" id="offlineExtensions">0</div>
+            </div>
+            <div class="stat-card" style="border-left-color: #f39c12;">
+                <h3>Llamadas Activas</h3>
+                <div class="stat-value" id="activeCallsCount">0</div>
+            </div>
+        </div>
+
+        <!-- Extensiones Registradas -->
+        <div style="margin-top: 30px;">
+            <h3>📋 Extensiones Registradas</h3>
+            <button onclick="refreshExtensions()" class="btn btn-primary" style="margin-bottom: 15px;">
+                <i class="fas fa-sync-alt"></i> Actualizar
+            </button>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Extensión</th>
+                        <th>Nombre</th>
+                        <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody id="extensionsTableBody">
+                    <tr><td colspan="3" style="text-align: center;">Cargando...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Llamadas Activas -->
+        <div style="margin-top: 30px;">
+            <h3>📞 Llamadas Activas</h3>
+            <button onclick="refreshActiveCalls()" class="btn btn-success" style="margin-bottom: 15px;">
+                <i class="fas fa-sync-alt"></i> Actualizar
+            </button>
+            <div id="activeCallsContainer">
+                <p style="text-align: center; color: #666;">No hay llamadas activas en este momento</p>
+            </div>
+        </div>
+
+        <!-- Historial de Llamadas -->
+        <div style="margin-top: 30px;">
+            <h3>📊 Historial Reciente de Llamadas (CDR)</h3>
+            <button onclick="refreshCallHistory()" class="btn btn-info" style="margin-bottom: 15px;">
+                <i class="fas fa-sync-alt"></i> Actualizar
+            </button>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Origen</th>
+                        <th>Destino</th>
+                        <th>Fecha/Hora</th>
+                        <th>Duración</th>
+                    </tr>
+                </thead>
+                <tbody id="callHistoryTableBody">
+                    <tr><td colspan="4" style="text-align: center;">Cargando...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    `;
+    
+    // Actualizar navegación
+    updateNavLinks('voipBtn');
+    
+    // Cargar datos iniciales
+    loadAsteriskStatus();
+    loadStatistics();
+    loadExtensions();
+    loadActiveCalls();
+    loadCallHistory();
+    
+    // Auto-actualizar cada 5 segundos
+    if (window.voipUpdateInterval) {
+        clearInterval(window.voipUpdateInterval);
+    }
+    window.voipUpdateInterval = setInterval(() => {
+        loadStatistics();
+        loadActiveCalls();
+    }, 5000);
+}
+
+// Función para verificar estado del servidor Asterisk
+function loadAsteriskStatus() {
+    fetch('/api/voip/status')
+        .then(response => response.json())
+        .then(data => {
+            const statusEl = document.getElementById('asteriskStatus');
+            const versionEl = document.getElementById('asteriskVersion');
+            
+            if (statusEl) {
+                if (data.status === 'online') {
+                    statusEl.textContent = '🟢 En Línea';
+                    statusEl.style.color = '#27ae60';
+                    if (versionEl && data.version) {
+                        versionEl.textContent = data.version;
+                    }
+                } else {
+                    statusEl.textContent = '🔴 Fuera de Línea';
+                    statusEl.style.color = '#e74c3c';
+                    if (versionEl) {
+                        versionEl.textContent = data.error || 'No se puede conectar';
+                    }
+                }
+            }
+        })
+        .catch(error => {
+            console.error('Error al obtener estado de Asterisk:', error);
+            const statusEl = document.getElementById('asteriskStatus');
+            if (statusEl) {
+                statusEl.textContent = '⚠️ Error de Conexión';
+                statusEl.style.color = '#f39c12';
+            }
+        });
+}
+
+// Función para cargar estadísticas
+function loadStatistics() {
+    fetch('/api/voip/statistics')
+        .then(response => response.json())
+        .then(data => {
+            updateElement('totalExtensions', data.totalExtensions);
+            updateElement('onlineExtensions', data.onlineExtensions);
+            updateElement('offlineExtensions', data.offlineExtensions);
+            updateElement('activeCallsCount', data.activeCalls);
+        })
+        .catch(error => {
+            console.error('Error al cargar estadísticas:', error);
+        });
+}
+
+// Función para cargar extensiones
+function loadExtensions() {
+    fetch('/api/voip/extensions')
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.getElementById('extensionsTableBody');
+            if (!tableBody) return;
+            
+            if (data.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="3" style="text-align: center;">No hay extensiones registradas</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            data.forEach(ext => {
+                const statusClass = ext.status === 'OK' ? 'status-active' : 'status-inactive';
+                const statusText = ext.status === 'OK' ? '🟢 En Línea' : '🔴 Fuera de Línea';
+                
+                html += `
+                    <tr>
+                        <td><strong>${ext.extension}</strong></td>
+                        <td>${ext.name}</td>
+                        <td><span class="status-tag ${statusClass}">${statusText}</span></td>
+                    </tr>
+                `;
+            });
+            
+            tableBody.innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error al cargar extensiones:', error);
+            const tableBody = document.getElementById('extensionsTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #e74c3c;">Error al cargar extensiones</td></tr>';
+            }
+        });
+}
+
+// Función para cargar llamadas activas
+function loadActiveCalls() {
+    fetch('/api/voip/active-calls')
+        .then(response => response.json())
+        .then(data => {
+            const container = document.getElementById('activeCallsContainer');
+            if (!container) return;
+            
+            if (data.count === 0 || !data.calls || data.calls.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: #666;">No hay llamadas activas en este momento</p>';
+                return;
+            }
+            
+            let html = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;">';
+            
+            data.calls.forEach(call => {
+                html += `
+                    <div class="stat-card" style="border-left-color: #27ae60;">
+                        <h4 style="margin-bottom: 10px;">
+                            <i class="fas fa-phone-volume" style="color: #27ae60;"></i> 
+                            ${call.channel}
+                        </h4>
+                        <p><strong>Estado:</strong> <span class="status-tag status-active">${call.state}</span></p>
+                        <p><strong>Aplicación:</strong> ${call.application}</p>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            container.innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error al cargar llamadas activas:', error);
+        });
+}
+
+// Función para cargar historial de llamadas
+function loadCallHistory() {
+    fetch('/api/voip/call-history')
+        .then(response => response.json())
+        .then(data => {
+            const tableBody = document.getElementById('callHistoryTableBody');
+            if (!tableBody) return;
+            
+            if (data.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center;">No hay registros de llamadas</td></tr>';
+                return;
+            }
+            
+            let html = '';
+            data.reverse().slice(0, 10).forEach(call => {
+                const duration = formatDuration(call.billsec || call.duration);
+                const dateTime = formatDateTime(call.calldate || call.start);
+                
+                html += `
+                    <tr>
+                        <td><strong>${call.src}</strong></td>
+                        <td><strong>${call.dst}</strong></td>
+                        <td>${dateTime}</td>
+                        <td>${duration}</td>
+                    </tr>
+                `;
+            });
+            
+            tableBody.innerHTML = html;
+        })
+        .catch(error => {
+            console.error('Error al cargar historial:', error);
+            const tableBody = document.getElementById('callHistoryTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #e74c3c;">Error al cargar historial</td></tr>';
+            }
+        });
+}
+
+// Funciones auxiliares
+function updateElement(id, value) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.textContent = value;
+    }
+}
+
+function formatDuration(seconds) {
+    if (!seconds || seconds === '0') return '0s';
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+}
+
+// Funciones de actualización manual
+function refreshExtensions() {
+    loadExtensions();
+    showTemporaryMessage('✓ Extensiones actualizadas');
+}
+
+function refreshActiveCalls() {
+    loadActiveCalls();
+    showTemporaryMessage('✓ Llamadas activas actualizadas');
+}
+
+function refreshCallHistory() {
+    loadCallHistory();
+    showTemporaryMessage('✓ Historial actualizado');
+}
+
+// Limpiar intervalo al salir de la vista
+document.addEventListener('click', function(e) {
+    if (e.target.classList.contains('nav-link') && e.target.id !== 'voipBtn') {
+        if (window.voipUpdateInterval) {
+            clearInterval(window.voipUpdateInterval);
+        }
+    }
+});
+    // Cargar gestión de usuarios
+// ============================================================
+// VARIABLES GLOBALES PARA USUARIOS
+// ============================================================
+let currentUserPage = 1;
+const usersPerPage = 5;
+let currentUserFilter = 'todos';
+let allUsers = []; // Almacenar todos los usuarios
+let filteredUsers = []; // Usuarios después de aplicar filtros
+let currentUserId = null;
+let editingUserId = null; // Para el modal de edición
+
+// ============================================================
+// FUNCIÓN PARA CARGAR LA GESTIÓN DE USUARIOS CON FILTROS
+// ============================================================
+function loadUserManagement() {
+    document.getElementById('mainContent').innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <h2>Gestión de Usuarios</h2>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <label for="userRoleFilter" style="margin: 0;">Rol:</label>
+                <select id="userRoleFilter" onchange="applyUserFilters()" class="form-select" style="width: 150px;">
+                    <option value="todos">Todos</option>
+                    <option value="administradores">Administradores</option>
+                    <option value="usuarios">Usuarios</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Panel de filtros de búsqueda -->
+        <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #e0e0e0;">
+            <h3 style="margin: 0 0 15px 0; font-size: 16px; color: #2c3e50;">
+                <i class="fas fa-search"></i> Filtros de Búsqueda
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px;">
+                <!-- Filtro por Username -->
+                <div>
+                    <label for="filterUsername" style="display: block; margin-bottom: 5px; font-size: 14px; color: #666;">
+                        👤 Usuario
+                    </label>
+                    <input 
+                        type="text" 
+                        id="filterUsername" 
+                        placeholder="Buscar por usuario..." 
+                        oninput="applyUserFilters()"
+                        style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;"
+                    />
+                </div>
+                
+                <!-- Filtro por Nombre -->
+                <div>
+                    <label for="filterNombre" style="display: block; margin-bottom: 5px; font-size: 14px; color: #666;">
+                        📝 Nombre
+                    </label>
+                    <input 
+                        type="text" 
+                        id="filterNombre" 
+                        placeholder="Buscar por nombre..." 
+                        oninput="applyUserFilters()"
+                        style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;"
+                    />
+                </div>
+                
+                <!-- Filtro por Apellido -->
+                <div>
+                    <label for="filterApellido" style="display: block; margin-bottom: 5px; font-size: 14px; color: #666;">
+                        📝 Apellido
+                    </label>
+                    <input 
+                        type="text" 
+                        id="filterApellido" 
+                        placeholder="Buscar por apellido..." 
+                        oninput="applyUserFilters()"
+                        style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;"
+                    />
+                </div>
+                
+                <!-- Filtro por Email -->
+                <div>
+                    <label for="filterEmail" style="display: block; margin-bottom: 5px; font-size: 14px; color: #666;">
+                        📧 Email
+                    </label>
+                    <input 
+                        type="text" 
+                        id="filterEmail" 
+                        placeholder="Buscar por email..." 
+                        oninput="applyUserFilters()"
+                        style="width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px;"
+                    />
+                </div>
+            </div>
+            
+            <!-- Botón para limpiar filtros -->
+            <div style="margin-top: 15px; text-align: right;">
+                <button onclick="clearUserFilters()" class="btn btn-primary" style="padding: 8px 16px; font-size: 14px;">
+                    <i class="fas fa-eraser"></i> Limpiar Filtros
+                </button>
+            </div>
+        </div>
+        
+        <button class="btn btn-success" style="margin-bottom: 20px;" onclick="openCreateUserModal()">
+            <i class="fas fa-user-plus"></i> Crear Usuario
+        </button>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Email</th>
+                    <th>Rol</th>
+                    <th>Último Acceso</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="userTableBody">
+                <tr><td colspan="7" style="text-align: center;">Cargando...</td></tr>
+            </tbody>
+        </table>
+        <div id="userPaginationContainer" style="margin-top: 15px; text-align: center;"></div>
+    `;
+    
+    updateNavLinks('usuariosBtn');
+    
+// Cargar usuarios desde la BD
+loadUsersFromDatabase();
+
+// MOVER el setTimeout AQUÍ AL FINAL
+setTimeout(() => {
+    applyUserFilters();
+}, 200);
+}
+
+// ============================================================
+// APLICAR FILTROS DE BÚSQUEDA
+// ============================================================
+function applyUserFilters() {
+    const roleFilter = document.getElementById('userRoleFilter').value;
+    const usernameFilter = document.getElementById('filterUsername') ? document.getElementById('filterUsername').value.toLowerCase().trim() : '';
+    const nombreFilter = document.getElementById('filterNombre') ? document.getElementById('filterNombre').value.toLowerCase().trim() : '';
+    const apellidoFilter = document.getElementById('filterApellido') ? document.getElementById('filterApellido').value.toLowerCase().trim() : '';
+    const emailFilter = document.getElementById('filterEmail') ? document.getElementById('filterEmail').value.toLowerCase().trim() : '';
+    
+    console.log('Aplicando filtros:', { roleFilter, usernameFilter, nombreFilter, apellidoFilter, emailFilter });
+    console.log('Total usuarios antes de filtrar:', allUsers.length);
+    
+    // Partir de todos los usuarios
+    let result = [...allUsers];
+    
+    // Aplicar filtro de rol
+    if (roleFilter === 'administradores') {
+        result = result.filter(user => 
+            user.roles && user.roles.includes('ROLE_ADMIN'));
+    } else if (roleFilter === 'usuarios') {
+        result = result.filter(user => 
+            !user.roles || !user.roles.includes('ROLE_ADMIN'));
+    }
+    
+    // Aplicar filtros de búsqueda
+    if (usernameFilter) {
+        result = result.filter(user => 
+            user.username && user.username.toLowerCase().includes(usernameFilter)
+        );
+    }
+    
+    if (nombreFilter) {
+        result = result.filter(user => 
+            user.nombre && user.nombre.toLowerCase().includes(nombreFilter)
+        );
+    }
+    
+    if (apellidoFilter) {
+        result = result.filter(user => 
+            user.apellido && user.apellido.toLowerCase().includes(apellidoFilter)
+        );
+    }
+    
+    if (emailFilter) {
+        result = result.filter(user => 
+            user.email && user.email.toLowerCase().includes(emailFilter)
+        );
+    }
+    
+    console.log('Usuarios después de filtrar:', result.length);
+    
+    // Actualizar usuarios filtrados
+    filteredUsers = result;
+    
+    // Resetear a la primera página
+    currentUserPage = 1;
+    
+    // Renderizar tabla
+    renderUserTable();
+}
+
+// ============================================================
+// LIMPIAR FILTROS
+// ============================================================
+function clearUserFilters() {
+    const roleFilterEl = document.getElementById('userRoleFilter');
+    const usernameFilterEl = document.getElementById('filterUsername');
+    const nombreFilterEl = document.getElementById('filterNombre');
+    const apellidoFilterEl = document.getElementById('filterApellido');
+    const emailFilterEl = document.getElementById('filterEmail');
+    
+    if (roleFilterEl) roleFilterEl.value = 'todos';
+    if (usernameFilterEl) usernameFilterEl.value = '';
+    if (nombreFilterEl) nombreFilterEl.value = '';
+    if (apellidoFilterEl) apellidoFilterEl.value = '';
+    if (emailFilterEl) emailFilterEl.value = '';
+    
+    console.log('Filtros limpiados');
+    applyUserFilters();
+}
+
+// ============================================================
+// RENDERIZAR TABLA DE USUARIOS CON PAGINACIÓN
+// ============================================================
+function renderUserTable() {
+    const tableBody = document.getElementById('userTableBody');
+    const paginationContainer = document.getElementById('userPaginationContainer');
+    
+    if (!tableBody || !paginationContainer) {
+        console.error('No se encontraron elementos de la tabla');
+        return;
+    }
+    
+    console.log('Renderizando tabla con', filteredUsers.length, 'usuarios filtrados');
+    
+    if (filteredUsers.length === 0) {
+        tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center;">No se encontraron usuarios</td></tr>';
+        paginationContainer.innerHTML = '';
+        return;
+    }
+    
+    // Calcular paginación
+    const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+    const start = (currentUserPage - 1) * usersPerPage;
+    const end = start + usersPerPage;
+    const usersToShow = filteredUsers.slice(start, end);
+    
+    console.log('Mostrando usuarios', start + 1, 'a', Math.min(end, filteredUsers.length));
+    
+    // Generar HTML de la tabla
+    let html = '';
+    usersToShow.forEach(user => {
+        const rolText = user.roles && user.roles.includes('ROLE_ADMIN') ? 'Administrador' : 'Usuario';
+        const ultimoAcceso = user.ultimoAcceso || 'Nunca';
+        
+        html += `
+            <tr>
+                <td><strong>${user.username}</strong></td>
+                <td>${user.nombre}</td>
+                <td>${user.apellido}</td>
+                <td>${user.email}</td>
+                <td><span class="status-tag ${user.roles && user.roles.includes('ROLE_ADMIN') ? 'status-active' : ''}">${rolText}</span></td>
+                <td>${ultimoAcceso}</td>
+                <td>
+                    <button class="btn btn-primary action-btn" onclick="openEditUserModal(${user.id})" title="Editar usuario">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-danger action-btn" onclick="openDeleteUserModal(${user.id}, '${user.username}')" title="Eliminar usuario">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+    
+    tableBody.innerHTML = html;
+    
+    // Generar paginación
+    let paginationHTML = `
+        <span style="margin-right: 15px; color: #666; font-size: 14px;">
+            Mostrando ${start + 1}-${Math.min(end, filteredUsers.length)} de ${filteredUsers.length} usuarios
+        </span>
+    `;
+    
+    if (currentUserPage > 1) {
+        paginationHTML += `<button onclick="changeUserPage(1)" class="btn pagination-button" title="Primera página">
+            <i class="fas fa-angle-double-left"></i>
+        </button>`;
+        paginationHTML += `<button onclick="changeUserPage(${currentUserPage - 1})" class="btn pagination-button">
+            <i class="fas fa-angle-left"></i> Anterior
+        </button>`;
+    }
+    
+    const maxButtons = 5;
+    let startPage = Math.max(1, currentUserPage - Math.floor(maxButtons / 2));
+    let endPage = Math.min(totalPages, startPage + maxButtons - 1);
+    
+    if (endPage - startPage < maxButtons - 1) {
+        startPage = Math.max(1, endPage - maxButtons + 1);
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        const activeClass = i === currentUserPage ? 'btn-primary' : '';
+        paginationHTML += `<button onclick="changeUserPage(${i})" class="btn pagination-button ${activeClass}">${i}</button>`;
+    }
+    
+    if (currentUserPage < totalPages) {
+        paginationHTML += `<button onclick="changeUserPage(${currentUserPage + 1})" class="btn pagination-button">
+            Siguiente <i class="fas fa-angle-right"></i>
+        </button>`;
+        paginationHTML += `<button onclick="changeUserPage(${totalPages})" class="btn pagination-button" title="Última página">
+            <i class="fas fa-angle-double-right"></i>
+        </button>`;
+    }
+    
+    paginationContainer.innerHTML = paginationHTML;
+}
+// ============================================================
+// CAMBIAR PÁGINA DE USUARIOS
+// ============================================================
+function changeUserPage(page) {
+    currentUserPage = page;
+    renderUserTable();
+    
+    const table = document.querySelector('#userTableBody');
+    if (table) {
+        table.parentElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+// ============================================================
+// CARGAR USUARIOS DESDE LA BASE DE DATOS
+// ============================================================
+function loadUsersFromDatabase() {
+    console.log('Cargando usuarios desde la base de datos...');
+    
+    fetch('/api/usuarios')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al obtener usuarios: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Usuarios recibidos:', data);
+            
+            // Actualizar TODAS las variables globales
+            users = data;
+            allUsers = data;
+            filteredUsers = [...allUsers];
+            
+            console.log('Variables actualizadas - Total usuarios:', allUsers.length);
+            
+            // Actualizar la tabla de usuarios si estamos en la vista de gestión
+            if (document.getElementById('userTableBody')) {
+                console.log('Renderizando tabla de usuarios...');
+                renderUserTable();
+            }
+            
+            // Actualizar contador en el dashboard
+            updateStatCounts();
+        })
+        .catch(error => {
+            console.error('Error cargando usuarios:', error);
+            const tableBody = document.getElementById('userTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: #e74c3c;">Error al cargar usuarios</td></tr>';
+            }
+        });
+}
+
+// ============================================================
+// ABRIR MODAL DE EDICIÓN DE USUARIO
+// ============================================================
+function openEditUserModal(userId) {
+    console.log('=== ABRIENDO MODAL DE EDICIÓN ===');
+    console.log('ID recibido:', userId);
+    console.log('Tipo de ID:', typeof userId);
+    console.log('Usuarios disponibles:', allUsers);
+    
+    const user = allUsers.find(u => {
+        console.log(`Comparando: ${u.id} (${typeof u.id}) === ${userId} (${typeof userId})`);
+        return u.id == userId; // Usar == en lugar de === por si hay diferencia de tipo
+    });
+    
+    if (!user) {
+        console.error('❌ Usuario NO encontrado con ID:', userId);
+        alert('Usuario no encontrado. ID: ' + userId);
+        return;
+    }
+    
+    console.log('✅ Usuario encontrado:', user);
+    
+    editingUserId = userId;
+    
+    // Rellenar formulario
+    document.getElementById('editUsername').value = user.username;
+    document.getElementById('editNombre').value = user.nombre;
+    document.getElementById('editApellido').value = user.apellido;
+    document.getElementById('editEmail').value = user.email;
+    document.getElementById('editRol').value = user.roles && user.roles.includes('ROLE_ADMIN') ? 'ROLE_ADMIN' : 'ROLE_USER';
+    document.getElementById('editPassword').value = '';
+    
+    console.log('Formulario rellenado');
+    
+    // Mostrar modal
+    const modal = document.getElementById('editUserModal');
+    if (!modal) {
+        console.error('❌ Modal no encontrado en el DOM');
+        alert('Error: Modal de edición no encontrado');
+        return;
+    }
+    
+    modal.style.display = 'block';
+    document.getElementById('editUserResult').style.display = 'none';
+    
+    console.log('✅ Modal mostrado');
+}
+
+// ============================================================
+// CERRAR MODAL DE EDICIÓN
+// ============================================================
+function closeEditUserModal() {
+    document.getElementById('editUserModal').style.display = 'none';
+    editingUserId = null;
+}
+
+// ============================================================
+// ACTUALIZAR USUARIO
+// ============================================================
+function updateUser() {
+    if (!editingUserId) return;
+    
+    const username = document.getElementById('editUsername').value;
+    const password = document.getElementById('editPassword').value;
+    const nombre = document.getElementById('editNombre').value;
+    const apellido = document.getElementById('editApellido').value;
+    const email = document.getElementById('editEmail').value;
+    const rol = document.getElementById('editRol').value;
+    
+    if (!username || !nombre || !apellido || !email) {
+        alert('Por favor, complete todos los campos obligatorios');
+        return;
+    }
+    
+    const usuarioActualizado = {
+        id: editingUserId,
+        username: username,
+        nombre: nombre,
+        apellido: apellido,
+        email: email,
+        roles: [rol]
+    };
+    
+    // Solo incluir password si se modificó
+    if (password && password.trim() !== '') {
+        usuarioActualizado.password = password;
+    }
+    
+    fetch(`/api/usuarios/${editingUserId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(usuarioActualizado)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al actualizar usuario');
+        }
+        return response.json();
+    })
+    .then(data => {
+        document.getElementById('editUserResult').textContent = '✓ Usuario actualizado correctamente';
+        document.getElementById('editUserResult').className = 'success-message';
+        document.getElementById('editUserResult').style.display = 'block';
+        
+        // Recargar usuarios
+        setTimeout(() => {
+            closeEditUserModal();
+            loadUsersFromDatabase();
+        }, 1500);
+        
+        // Registrar actividad
+        registrarActividad(`Actualización de usuario: ${username}`);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('editUserResult').textContent = 'Error al actualizar usuario: ' + error.message;
+        document.getElementById('editUserResult').className = 'error-message';
+        document.getElementById('editUserResult').style.display = 'block';
+    });
+}
+    
+    // Cargar logs de actividad con filtros
+function loadLogs() {
+    // Cambiar el contenido principal
+    document.getElementById('mainContent').innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <h2>Logs de Actividad</h2>
+            <div class="filter-dropdown">
+                <label for="logFilter" style="margin-right: 10px;"/label>
+                <select id="logFilter" onchange="onFilterChange()" class="form-select">
+                    <option value="todos">Todos</option>
+                    <option value="ping">Ping</option>
+                    <option value="escaneos">Escaneos</option>
+                </select>
+            </div>
+        </div>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>IP</th>
+                    <th>Fecha</th>
+                    <th>Hora</th>
+                    <th>Descripción</th>
+                </tr>
+            </thead>
+            <tbody id="logsTableBody">
+                <!-- Contenido de la tabla de logs -->
+            </tbody>
+        </table>
+        <div id="paginationContainer" style="margin-top: 15px; text-align: center;"></div>
+    `;
+
+    // Actualizar enlaces de navegación
+    updateNavLinks('logsBtn');
+
+    // Cargar los logs
+    loadActivityLogs();
+
+    // Evento para el <select> que cambia el filtro
+    const logFilterSelect = document.getElementById('logFilter');
+    logFilterSelect.addEventListener('change', function () {
+        filterLogs(this.value);
+    });
+
+    // Mostrar todos los logs por defecto
+    filterLogs('todos');
+}
+
+function onFilterChange() {
+    const selected = document.getElementById('logFilter').value;
+    currentLogFilter = selected;
+    currentPage = 1;
+    updateLogsTable();
+}
+
+// Función para filtrar logs
+function filterLogs(filterType) {
+    currentLogFilter = filterType;
+    updateLogsTable(filterType);
+}
+
+// Actualizar tabla de logs con filtro
+function updateLogsTable(filterType = currentLogFilter) {
+    let tableBody = document.getElementById('logsTableBody');
+    if (!tableBody) return; // Si no existe la tabla, salir
+    
+    // Asegurarse que los logs existan
+    if (!logsActividad || !Array.isArray(logsActividad)) {
+        console.error('Error: logsActividad no es un array válido');
+        return;
+    }
+
+    // Aplicar filtro según el tipo seleccionado
+    let filteredLogs = [];
+    
+    if (filterType === 'todos') {
+        filteredLogs = logsActividad;
+    } else if (filterType === 'ping') {
+        filteredLogs = logsActividad.filter(log => 
+            log.descripcion && log.descripcion.toLowerCase().includes('ping'));
+    } else if (filterType === 'escaneos') {
+        filteredLogs = logsActividad.filter(log => 
+            log.descripcion && (
+                log.descripcion.toLowerCase().includes('escan') || 
+                log.descripcion.toLowerCase().includes('puerto')
+            )
+        );
+    }
+
+    // Generar HTML para la tabla
+    let html = '';
+    if (filteredLogs.length === 0) {
+        html = `<tr><td colspan="4" style="text-align: center;">No hay logs disponibles</td></tr>`;
+    } else {
+        for (let log of filteredLogs) {
+            html += `
+                <tr>
+                    <td>${log.ip || '-'}</td>
+                    <td>${log.fecha || '-'}</td>
+                    <td>${log.hora || '-'}</td>
+                    <td>${log.descripcion || '-'}</td>
+                </tr>
+            `;
+        }
+    }
+
+    // Actualizar la tabla
+    tableBody.innerHTML = html;
+}
+
+
+// Variable global para almacenar todos los dispositivos
+let dispositivosConectados = [];
+// Variable para almacenar los dispositivos filtrados
+let dispositivosFiltrados = [];
+
+// Función para cargar la cantidad de dispositivos y actualizar contadores
+function loadDeviceCount() {
+    fetch('/api/dispositivos')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al obtener dispositivos: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Dispositivos cargados desde BD:', data); // Debug
+            
+            // Actualizar la variable global de dispositivos
+            dispositivosConectados = data;
+            // Por defecto, mostrar todos
+            dispositivosFiltrados = [...dispositivosConectados];
+            
+            // Actualizar contadores en el dashboard
+            updateDeviceStatCounts();
+            
+            // Actualizar la tabla de dispositivos si estamos en la vista de dispositivos
+            if (document.getElementById('deviceTableBody')) {
+                updateDeviceTable();
+            }
+        })
+        .catch(error => {
+            console.error('Error cargando dispositivos:', error);
+            // Mostrar error en los contadores
+            updateDeviceCountsWithError();
+        });
+}
+
+// Actualizar contadores estadísticos de dispositivos
+function updateDeviceStatCounts() {
+    console.log('Actualizando contadores de dispositivos...'); // Debug
+    
+    // Calcular estadísticas
+    const totalDevices = dispositivosConectados.length;
+    const autorizados = dispositivosConectados.filter(d => d.estadoAutorizacion === 'AUTORIZADO').length;
+    const noAutorizados = dispositivosConectados.filter(d => d.estadoAutorizacion === 'NO_AUTORIZADO').length;
+    const desconocidos = dispositivosConectados.filter(d => d.estadoAutorizacion === 'DESCONOCIDO').length;
+    
+    // Actualizar contadores si los elementos existen
+    const totalDevicesEl = document.getElementById('totalDevices');
+    const autorizadosCountEl = document.getElementById('autorizadosCount');
+    const noAutorizadosCountEl = document.getElementById('noAutorizadosCount');
+    const desconocidosCountEl = document.getElementById('desconocidosCount');
+    
+    if (totalDevicesEl) {
+        totalDevicesEl.textContent = totalDevices;
+        console.log('Total devices actualizado:', totalDevices); // Debug
+    }
+    if (autorizadosCountEl) {
+        autorizadosCountEl.textContent = autorizados;
+        console.log('Autorizados actualizado:', autorizados); // Debug
+    }
+    if (noAutorizadosCountEl) {
+        noAutorizadosCountEl.textContent = noAutorizados;
+        console.log('No autorizados actualizado:', noAutorizados); // Debug
+    }
+    if (desconocidosCountEl) {
+        desconocidosCountEl.textContent = desconocidos;
+        console.log('Desconocidos actualizado:', desconocidos); // Debug
+    }
+}
+
+// Función para manejar errores en la carga de dispositivos
+function updateDeviceCountsWithError() {
+    const elements = [
+        'totalDevices',
+        'autorizadosCount', 
+        'noAutorizadosCount',
+        'desconocidosCount'
+    ];
+    
+    elements.forEach(id => {
+        const element = document.getElementById(id);
+        if (element) {
+            element.textContent = 'Error';
+        }
+    });
+}
+
+// Función para cargar dispositivos desde la base de datos (versión completa para vista de dispositivos)
+function loadDevicesFromDatabase() {
+    fetch('/api/dispositivos')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al obtener dispositivos: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            console.log('Dispositivos cargados desde BD:', data); // Debug
+            
+            // Actualizar la variable global de dispositivos
+            dispositivosConectados = data;
+            // Por defecto, mostrar todos
+            dispositivosFiltrados = [...dispositivosConectados];
+            
+            // Actualizar la tabla de dispositivos si estamos en la vista de dispositivos
+            if (document.getElementById('deviceTableBody')) {
+                updateDeviceTable();
+            }
+            
+            // Actualizar contador en el dashboard - SIEMPRE
+            updateDeviceStatCounts();
+        })
+        .catch(error => {
+            console.error('Error cargando dispositivos:', error);
+            // Mostrar error en los contadores
+            updateDeviceCountsWithError();
+        });
+}
+
+// Función mejorada para cargar la vista de dispositivos
+function loadDispositivosView() {
+    document.getElementById('mainContent').innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <h2>Dispositivos Detectados</h2>
+            <div class="filter-dropdown">
+                <label for="filtroEstado" style="margin-right: 10px;"></label>
+                <select id="filtroEstado" class="form-select" onchange="filtrarDispositivosPorEstado()">
+                    <option value="TODOS">Todos</option>
+                    <option value="AUTORIZADO">Autorizados</option>
+                    <option value="NO_AUTORIZADO">No Autorizados</option>
+                    <option value="DESCONOCIDO">Desconocidos</option>
+                </select>
+            </div>
+        </div>
+        
+        <table class="device-list">
+            <thead>
+                <tr>
+                    <th>IP</th>
+                    <th>Última Conexión</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="deviceTableBody">
+                <!-- Contenido de la tabla de dispositivos -->
+            </tbody>
+        </table>
+    `;
+    
+    // Actualizar enlaces de navegación
+    updateNavLinks('dispositivosBtn');
+    
+    // Cargar dispositivos desde la base de datos
+    loadDevicesFromDatabase();
+}
+
+// Función para filtrar dispositivos por estado
+function filtrarDispositivosPorEstado() {
+    const filtro = document.getElementById('filtroEstado').value;
+    
+    if (filtro === 'TODOS') {
+        dispositivosFiltrados = [...dispositivosConectados];
+    } else {
+        dispositivosFiltrados = dispositivosConectados.filter(device => 
+            device.estadoAutorizacion === filtro
+        );
+    }
+    
+    updateDeviceTable();
+}
+
+// Actualizar tabla de dispositivos
+function updateDeviceTable() {
+    let tableBody = document.getElementById('deviceTableBody');
+    if(!tableBody) return;
+    
+    let html = '';
+    for(let device of dispositivosFiltrados) {
+        const fechaFormateada = new Date(device.ultimaConexion).toLocaleString();
+        
+        // Definir clase CSS según el estado
+        let estadoClass = '';
+        switch(device.estadoAutorizacion) {
+            case 'AUTORIZADO':
+                estadoClass = 'estado-autorizado';
+                break;
+            case 'NO_AUTORIZADO':
+                estadoClass = 'estado-no-autorizado';
+                break;
+            case 'DESCONOCIDO':
+                estadoClass = 'estado-desconocido';
+                break;
+        }
+        
+        html += `
+            <tr class="${estadoClass}">
+                <td>${device.ip}</td>
+                <td>${fechaFormateada}</td>
+                <td>${device.estadoAutorizacion}</td>
+                <td>
+                    <button class="btn btn-primary action-btn" onclick="pingDevice('${device.ip}')">
+                        <i class="fas fa-podcast"></i>
+                    </button>
+                    <button class="btn btn-info action-btn" onclick="scanDevice('${device.ip}')">
+                        <i class="fas fa-plug"></i>
+                    </button>
+                </td>
+            </tr>
+        `;
+    }
+    
+    tableBody.innerHTML = html;
+}
+
+// Actualizar navegación
+function updateNavLinks(activeId) {
+    // Quitar clase activa de todos los links
+    document.querySelectorAll('.sidebar .nav-link').forEach(link => {
+        link.classList.remove('active');
+    });
+    
+    // Añadir clase activa al link actual
+    document.getElementById(activeId).classList.add('active');
+}
+
+// Evento para cargar dispositivos cuando se carga el DOM
+document.addEventListener('DOMContentLoaded', function() {
+    // Cargar conteo de dispositivos si estamos en el dashboard
+    if (document.getElementById('totalDevices')) {
+        console.log('Dashboard detectado, cargando contadores de dispositivos...');
+        loadDeviceCount();
+        
+        // Configurar actualización automática cada 30 segundos para dispositivos
+        setInterval(loadDeviceCount, 30000);
+    }
+});
+    // Actualizar tabla de usuarios
+    // Función para actualizar tabla de usuarios
+// Función actualizada para mostrar la tabla de usuarios con filtro y paginación
+function updateUserTable() {
+    let tableBody = document.getElementById('userTableBody');
+    let paginationContainer = document.getElementById('userPaginationContainer');
+    
+    if(!tableBody || !paginationContainer) return;
+    
+    // Verificar que los usuarios existan
+    if (!users || !Array.isArray(users)) {
+        console.error('Error: users no es un array válido');
+        return;
+    }
+    
+    // 1. Aplicar filtro según el tipo seleccionado
+    let filteredUsers = [];
+    
+    if (currentUserFilter === 'todos') {
+        filteredUsers = users;
+    } else if (currentUserFilter === 'administradores') {
+        filteredUsers = users.filter(user => 
+            user.roles && user.roles.includes('ROLE_ADMIN'));
+    } else if (currentUserFilter === 'usuarios') {
+        filteredUsers = users.filter(user => 
+            !user.roles || !user.roles.includes('ROLE_ADMIN'));
+    }
+    
+    // 2. Calcular paginación
+    const totalPages = Math.ceil(filteredUsers.length / usersPerPage);
+    const start = (currentUserPage - 1) * usersPerPage;
+    const end = start + usersPerPage;
+    const usersToShow = filteredUsers.slice(start, end);
+    
+    // 3. Generar HTML de tabla solo para usuarios actuales
+    let html = '';
+    if (usersToShow.length === 0) {
+        html = `<tr><td colspan="7" style="text-align: center;">No hay usuarios disponibles</td></tr>`;
+    } else {
+        for (let user of usersToShow) {
+            html += `
+                <tr>
+                    <td>${user.username}</td>
+                    <td>${user.nombre}</td>
+                    <td>${user.apellido}</td>
+                    <td>${user.email}</td>
+                    <td>${user.roles && user.roles.includes('ROLE_ADMIN') ? 'Administrador' : 'Usuario'}</td>
+                    <td>${user.ultimoAcceso || 'Nunca'}</td>
+                    <td>
+                        <button class="btn btn-danger action-btn" onclick="openDeleteUserModal(${user.id}, '${user.username}')"><i class="fas fa-trash-alt"></i></button>
+                    </td>
+                </tr>
+            `;
+        }
+    }
+    
+    tableBody.innerHTML = html;
+    
+    // 4. Renderizar los botones de paginación
+    let paginationHTML = '';
+    
+    // Botón "Anterior"
+    if (currentUserPage > 1) {
+        paginationHTML += `<button onclick="changeUserPage(${currentUserPage - 1})" class="btn pagination-button">&laquo; Anterior</button>`;
+    }
+    
+    // Botones numerados
+    for (let i = 1; i <= totalPages; i++) {
+        paginationHTML += `<button onclick="changeUserPage(${i})" class="btn pagination-button ${i === currentUserPage ? 'btn-primary' : ''}">${i}</button>`;
+    }
+    
+    // Botón "Siguiente"
+    if (currentUserPage < totalPages) {
+        paginationHTML += `<button onclick="changeUserPage(${currentUserPage + 1})" class="btn pagination-button">Siguiente &raquo;</button>`;
+    }
+    
+    paginationContainer.innerHTML = paginationHTML;
+}
+    
+    // Actualizar tabla de logs
+    function updateLogsTable(filterType = currentLogFilter) {
+    const tableBody = document.getElementById('logsTableBody');
+    const paginationContainer = document.getElementById('paginationContainer');
+    if (!tableBody || !paginationContainer) return;
+
+    // Asegurarse de que los logs existan
+    if (!logsActividad || !Array.isArray(logsActividad)) {
+        console.error('Error: logsActividad no es un array válido');
+        return;
+    }
+
+    // 1. Aplicar el filtro
+    let filteredLogs = [];
+    if (filterType === 'todos') {
+        filteredLogs = logsActividad;
+    } else if (filterType === 'ping') {
+        filteredLogs = logsActividad.filter(log => 
+            log.descripcion && log.descripcion.toLowerCase().includes('ping'));
+    } else if (filterType === 'escaneos') {
+        filteredLogs = logsActividad.filter(log => 
+            log.descripcion && (
+                log.descripcion.toLowerCase().includes('escan') || 
+                log.descripcion.toLowerCase().includes('puerto')
+            )
+        );
+    }
+
+    // 2. Calcular paginación
+    const totalPages = Math.ceil(filteredLogs.length / logsPerPage);
+    const start = (currentPage - 1) * logsPerPage;
+    const end = start + logsPerPage;
+    const logsToShow = filteredLogs.slice(start, end);
+
+    // 3. Generar HTML de tabla solo para logs actuales
+    let html = '';
+    if (logsToShow.length === 0) {
+        html = `<tr><td colspan="4" style="text-align: center;">No hay logs disponibles</td></tr>`;
+    } else {
+        for (let log of logsToShow) {
+            html += `
+                <tr>
+                    <td>${log.ip || '-'}</td>
+                    <td>${log.fecha || '-'}</td>
+                    <td>${log.hora || '-'}</td>
+                    <td>${log.descripcion}${log.usuario && log.usuario.username ? ' - hecho por <b>' + log.usuario.username + '</b>' : ''}</td>
+                </tr>
+            `;
+        }
+    }
+    tableBody.innerHTML = html;
+
+    // 4. Renderizar los botones de paginación
+    let paginationHTML = '';
+
+    // Botón "Anterior"
+    if (currentPage > 1) {
+        paginationHTML += `<button onclick="changePage(${currentPage - 1})" class="btn pagination-button">&laquo; Anterior</button>`;
+    }
+
+    // Botones numerados
+    for (let i = 1; i <= totalPages; i++) {
+        paginationHTML += `<button onclick="changePage(${i})" class="btn pagination-button ${i === currentPage ? 'btn-primary' : ''}">${i}</button>`;
+    }
+
+    // Botón "Siguiente"
+    if (currentPage < totalPages) {
+        paginationHTML += `<button onclick="changePage(${currentPage + 1})" class="btn pagination-button">Siguiente &raquo;</button>`;
+    }
+
+    paginationContainer.innerHTML = paginationHTML;
+}
+
+    function changePage(page) {
+        currentPage = page;
+        updateLogsTable();
+    }
+      
+    // Actualizar contadores estadísticos
+    function updateStatCounts() {
+        let userCount = document.getElementById('userCount');
+        if(userCount) userCount.textContent = users.length;
+    }
+
+// Variables para el gráfico de tráfico
+let trafficChart = null;
+const maxDataPoints = 30;
+
+// Funciones para controlar la captura de tráfico
+function resetTrafficCounter() {
+    fetch('/api/network/reset', { method: 'POST' })
+        .then(response => response.text())
+        .then(message => {
+            console.log(message);
+            // Reiniciar datos del gráfico
+            if (trafficChart) {
+                trafficChart.data.datasets[0].data = Array(maxDataPoints).fill(0);
+                trafficChart.update();
+            }
+            if (protocolChart) {
+                protocolChart.data.datasets.forEach(dataset => {
+                    dataset.data = Array(maxDataPoints).fill(0);
+                });
+                protocolChart.update();
+            }
+            // Reiniciar contadores visuales
+            document.getElementById('httpSpeed').innerText = '0.00 MB/s';
+            document.getElementById('voipSpeed').innerText = '0.00 MB/s';
+            document.getElementById('streamingSpeed').innerText = '0.00 MB/s';
+            document.getElementById('otherSpeed').innerText = '0.00 MB/s';
+            
+            showTemporaryMessage('✓ Contador reiniciado correctamente');
+        })
+        .catch(error => {
+            console.error('Error al reiniciar contador:', error);
+            alert('Error al reiniciar el contador');
+        });
+}
+
+function stopTrafficCapture() {
+    fetch('/api/network/stop', { method: 'POST' })
+        .then(response => response.text())
+        .then(message => {
+            console.log(message);
+            // Cerrar la conexión SSE si existe
+            if (eventSource) {
+                eventSource.close();
+                eventSource = null;
+            }
+            showTemporaryMessage('✓ Monitoreo detenido');
+        })
+        .catch(error => {
+            console.error('Error al detener captura:', error);
+            alert('Error al detener el monitoreo');
+        });
+}
+
+function startTrafficCapture() {
+    // Cerrar cualquier conexión SSE existente
+    if (eventSource) {
+        eventSource.close();
+        eventSource = null;
+    }
+    
+    // Iniciar la captura en el servidor
+    fetch('/api/network/start', { method: 'POST' })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al iniciar captura en el servidor');
+            }
+            return response.text();
+        })
+        .then(message => {
+            console.log(message);
+            // Iniciar una nueva conexión SSE para recibir actualizaciones
+            connectEventSource();
+            showTemporaryMessage('✓ Monitoreo iniciado');
+        })
+        .catch(error => {
+            console.error('Error al iniciar la captura:', error);
+            alert('Error al iniciar el monitoreo: ' + error.message);
+        });
+}
+
+// Función para conectar al EventSource
+// Función para conectar al EventSource
+function connectEventSource() {
+    // Prevenir conexiones duplicadas
+    if (eventSource) {
+        console.log('Ya existe una conexión SSE activa');
+        return;
+    }
+    
+    eventSource = new EventSource("/api/network/monitor");
+    console.log('Conexión SSE establecida');
+    
+    eventSource.onmessage = function(event) {
+        console.log("SSE mensaje recibido:", event.data);
+        
+        try {
+            const data = JSON.parse(event.data);
+            
+            // Verificar que los elementos existen antes de actualizar
+            const httpSpeedEl = document.getElementById('httpSpeed');
+            const voipSpeedEl = document.getElementById('voipSpeed');
+            const streamingSpeedEl = document.getElementById('streamingSpeed');
+            const otherSpeedEl = document.getElementById('otherSpeed');
+            
+            if (!httpSpeedEl || !voipSpeedEl || !streamingSpeedEl || !otherSpeedEl) {
+                console.warn('Elementos de UI no encontrados, cerrando conexión SSE');
+                eventSource.close();
+                eventSource = null;
+                return;
+            }
+            
+            // Actualizar gráfico de velocidad general
+            updateTrafficChart(data.speed);
+            
+            // Verificar umbrales
+            checkTrafficThresholds(data.speed);
+            
+            // Actualizar velocidades por protocolo
+            httpSpeedEl.innerText = data.protocolStats.httpMbps.toFixed(2) + " MB/s";
+            voipSpeedEl.innerText = data.protocolStats.voipMbps.toFixed(2) + " MB/s";
+            streamingSpeedEl.innerText = data.protocolStats.streamingMbps.toFixed(2) + " MB/s";
+            otherSpeedEl.innerText = data.protocolStats.otherMbps.toFixed(2) + " MB/s";
+            
+            // Actualizar gráfico de protocolos
+            updateProtocolChart(data.protocolStats);
+            
+        } catch (error) {
+            console.error("Error parseando datos JSON:", error);
+        }
+    };
+    
+    eventSource.onerror = function(error) {
+        console.error('Error en la conexión EventSource:', error);
+        if (eventSource) {
+            eventSource.close();
+            eventSource = null;
+            
+            // Reintentar solo si estamos en la vista de tráfico
+            if (document.getElementById('httpSpeed')) {
+                console.log('Reintentando conexión en 5 segundos...');
+                setTimeout(connectEventSource, 5000);
+            }
+        }
+    };
+}
+
+// Función para inicializar el monitoreo de red
+// Función para inicializar el monitoreo de red
+function initNetworkMonitoring() {
+    console.log("Inicializando monitoreo de red...");
+    
+    const trafficMbElement = document.getElementById('traffic-mb');
+    
+    if (!trafficMbElement) {
+        console.error('No se encontró el elemento con ID "traffic-mb"');
+        return;
+    }
+    
+    // Inicializar gráfico
+    initTrafficChart();
+    initProtocolChart(); 
+    
+    // Obtener datos actuales
+    fetch('/api/network/data')
+        .then(response => response.json())
+        .then(data => {
+            trafficMbElement.innerText = data.speed.toFixed(2) + " MB/s";
+            console.log("Datos iniciales cargados:", data.speed.toFixed(2) + " MB/s");
+            
+            // Iniciar conexión SSE
+            connectEventSource();
+        })
+        .catch(error => {
+            console.warn('Error al obtener datos iniciales:', error);
+            connectEventSource();
+        });
+}
+
+// Inicializar gráfico de tráfico
+function initTrafficChart() {
+    const ctx = document.getElementById('trafficChart');
+    if (!ctx) return;
+    
+    trafficChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: Array(maxDataPoints).fill(''),
+            datasets: [{
+                label: 'Velocidad (MB/s)',
+                data: Array(maxDataPoints).fill(0),
+                borderColor: '#3498db',
+                backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                tension: 0.4,
+                fill: true,
+                pointRadius: 0,
+                pointHoverRadius: 6,
+                borderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: {
+                duration: 0
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.parsed.y.toFixed(2) + ' MB/s';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { 
+                        color: '#2c3e50',
+                        callback: function(value) {
+                            return value.toFixed(1) + ' MB/s';
+                        }
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.05)'
+                    }
+                },
+                x: { 
+                    display: false 
+                }
+            }
+        }
+    });
+}
+
+// Actualizar gráfico con nuevo valor
+function updateTrafficChart(newValue) {
+    if (!trafficChart) return;
+    
+    trafficChart.data.datasets[0].data.push(newValue);
+    if (trafficChart.data.datasets[0].data.length > maxDataPoints) {
+        trafficChart.data.datasets[0].data.shift();
+    }
+    trafficChart.update('none');
+}
+
+// Asegurarse de que el monitoreo se inicie cuando la página cargue completamente
+document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM cargado, iniciando monitoreo...");
+    initNetworkMonitoring();
+});
+    
+    // Función para ejecutar ping real
+function executePing() {
+    let ip = document.getElementById('ipAddress').value;
+    let pingOutput = document.getElementById('pingOutput');
+    let pingResult = document.getElementById('pingResult');
+    
+    // Validar la entrada
+    if(!ip) {
+        alert('Por favor, ingrese una IP o dominio valido');
+        return;
+    }
+    
+    // Mostrar cargando
+    pingOutput.innerHTML = 'Haciendo ping a ' + ip + '...\n';
+    pingResult.style.display = 'block';
+    
+    // Llamar a la API de Spring Boot
+    fetch('/api/ping', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ip: ip })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error en la respuesta del servidor');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Mostrar el resultado del ping real
+        pingOutput.innerHTML = data.output;
+        
+        // No necesitas registrar la actividad manualmente ya que
+        // el backend ya lo hace automáticamente
+    })
+    .catch(error => {
+        pingOutput.innerHTML = 'Error al ejecutar ping: ' + error.message;
+    });
+}
+
+// Función para ejecutar escaneo de puertos - DISEÑO SIMPLE Y LIMPIO CON CLICK
+function executePortScan() {
+    let ip = document.getElementById('ipAddressScan').value;
+    let portRange = document.getElementById('portRange').value;
+    let scanOutput = document.getElementById('scanOutput');
+    let scanResult = document.getElementById('scanResult');
+    
+    if(!ip) {
+        alert('Por favor, ingrese una IP o dominio valido');
+        return;
+    }
+    
+    if(!portRange || !portRange.includes('-')) {
+        alert('Por favor, ingrese un rango de puertos valido (ejemplo: 1-1000)');
+        return;
+    }
+    
+    scanOutput.innerHTML = '<p>⏳ Escaneando ' + ip + '...</p>';
+    scanResult.style.display = 'block';
+    
+    fetch('/api/scan', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+            ip: ip,
+            portRange: portRange
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error en la respuesta del servidor');
+        }
+        return response.json();
+    })
+    .then(data => {
+        scanOutput.innerHTML = generateSimpleReport(data);
+    })
+    .catch(error => {
+        scanOutput.innerHTML = '<p style="color: #e74c3c;">❌ Error: ' + error.message + '</p>';
+    });
+}
+
+// Generar reporte SIMPLE
+// Generar reporte SIMPLE
+function generateSimpleReport(data) {
+    let html = '';
+    
+    // Información básica
+    html += '<div style="border: 1px solid #ddd; padding: 12px; margin-bottom: 15px; background: #f9f9f9; font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;">';
+    html += '<h4 style="margin: 0 0 8px 0; font-size: 14px; font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;">📊 Resultado del Escaneo</h4>';
+    html += '<p style="margin: 0; font-size: 13px; font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;"><strong>IP:</strong> ' + data.ip + '</p>';
+    html += '<p style="margin: 4px 0 0 0; font-size: 13px; font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;"><strong>Rango:</strong> ' + data.portRange + '</p>';
+    html += '<p style="margin: 4px 0 0 0; font-size: 13px; font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;"><strong>Puertos abiertos:</strong> ' + data.openPorts.length + ' de ' + data.totalScanned + '</p>';
+    html += '</div>';
+    
+    // Evaluación de seguridad
+    if (data.securityAnalysis) {
+        const analysis = data.securityAnalysis;
+        const riskColors = {
+            'CRÍTICO': '#e74c3c',
+            'ALTO': '#e67e22',
+            'MEDIO': '#f39c12',
+            'BAJO': '#27ae60'
+        };
+        const color = riskColors[analysis.overallRisk] || '#95a5a6';
+        
+        html += '<div style="border: 1px solid ' + color + '; padding: 12px; margin-bottom: 15px; background: white; font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;">';
+        html += '<h4 style="margin: 0 0 8px 0; font-size: 14px; color: ' + color + '; font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;">🛡️ Evaluación de Seguridad: ' + analysis.overallRisk + '</h4>';
+        html += '<p style="margin: 0; font-size: 13px; font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;">';
+        html += '<span style="color: #e74c3c;">● Críticos: ' + analysis.criticalPorts + '</span> | ';
+        html += '<span style="color: #e67e22;">● Altos: ' + analysis.highRiskPorts + '</span> | ';
+        html += '<span style="color: #f39c12;">● Medios: ' + analysis.mediumRiskPorts + '</span> | ';
+        html += '<span style="color: #27ae60;">● Bajos: ' + analysis.lowRiskPorts + '</span>';
+        html += '</p>';
+        html += '</div>';
+    }
+    
+    // Sin puertos
+    if (data.openPorts.length === 0) {
+        html += '<div style="border: 1px solid #27ae60; padding: 12px; background: #f0f9f4; font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;">';
+        html += '<p style="margin: 0; color: #27ae60; font-size: 13px; font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;">✅ No se encontraron puertos abiertos. Sistema protegido.</p>';
+        html += '</div>';
+        return html;
+    }
+    
+    // Lista de puertos
+    html += '<h4 style="margin: 0 0 10px 0; font-size: 14px; font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;">📋 Puertos Abiertos:</h4>';
+    
+    for(let portInfo of data.openPorts) {
+        const secDetail = findSecurityDetail(data.securityAnalysis, portInfo.port);
+        const riskLevel = secDetail ? secDetail.riskLevel : 'BAJO';
+        
+        let borderColor = '#ddd';
+        let bgColor = 'white';
+        
+        if (riskLevel === 'CRÍTICO') {
+            borderColor = '#e74c3c';
+            bgColor = '#fef5f5';
+        } else if (riskLevel === 'ALTO') {
+            borderColor = '#e67e22';
+            bgColor = '#fef9f5';
+        } else if (riskLevel === 'MEDIO') {
+            borderColor = '#f39c12';
+            bgColor = '#fffaf5';
+        } else {
+            borderColor = '#27ae60';
+            bgColor = '#f0f9f4';
+        }
+        
+        // Caja principal del puerto (clickeable)
+        html += '<div style="border-left: 3px solid ' + borderColor + '; padding: 10px; margin-bottom: 10px; background: ' + bgColor + '; cursor: pointer; font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;" onclick="togglePortDetail(\'port-detail-' + portInfo.port + '\')">';
+        html += '<p style="margin: 0; font-size: 13px; font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;"><strong>Puerto ' + portInfo.port + '/tcp</strong> - ' + portInfo.service + ' <span style="color: ' + borderColor + '; font-weight: bold;">[' + riskLevel + ']</span>';
+        
+        // Indicador de que hay detalles (solo si no es BAJO)
+        if (secDetail && riskLevel !== 'BAJO') {
+            html += ' <span style="font-size: 11px; color: #999; font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;">▼ Click para ver detalles</span>';
+        }
+        
+        html += '</p>';
+        
+        // Detalles ocultos (solo si hay riesgo)
+        if (secDetail && riskLevel !== 'BAJO') {
+            html += '<div id="port-detail-' + portInfo.port + '" style="display: none; margin-top: 8px; padding-top: 8px; border-top: 1px solid #eee; font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;">';
+            html += '<p style="margin: 0 0 4px 0; font-size: 12px; color: #666; font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;"><strong>⚠️ Problema:</strong> ' + secDetail.vulnerability + '</p>';
+            html += '<p style="margin: 4px 0 0 0; font-size: 12px; color: #666; font-family: \'Segoe UI\', Tahoma, Geneva, Verdana, sans-serif;"><strong>💡 Solución:</strong> ' + secDetail.recommendation + '</p>';
+            html += '</div>';
+        }
+        
+        html += '</div>';
+    }
+    
+    return html;
+}
+
+// Función para mostrar/ocultar detalles del puerto
+function togglePortDetail(elementId) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        if (element.style.display === 'none') {
+            element.style.display = 'block';
+        } else {
+            element.style.display = 'none';
+        }
+    }
+}
+
+// Funciones auxiliares
+function findSecurityDetail(analysis, port) {
+    if (!analysis || !analysis.portDetails) return null;
+    return analysis.portDetails.find(d => d.port === port);
+}
+// Función para cargar logs de actividad desde el servidor
+function loadActivityLogs() {
+    fetch('/api/events')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error al obtener logs: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Actualizar la variable global que contiene los logs
+            logsActividad = data;
+            
+            // Actualizar la tabla con el filtro actual
+            updateLogsTable(currentLogFilter);
+        })
+        .catch(error => {
+            console.error('Error cargando logs:', error);
+            // Mostrar mensaje de error si es necesario
+        });
+}
+
+
+// Cargar logs al iniciar la página
+document.addEventListener('DOMContentLoaded', function() {
+    loadActivityLogs();
+});
+    // Crear usuario
+    // Función para crear un nuevo usuario en la base de datos
+function createUser() {
+    // Obtener datos del formulario
+    let username = document.getElementById('newUsername').value;
+    let password = document.getElementById('newPassword').value;
+    let nombre = document.getElementById('newNombre').value;
+    let apellido = document.getElementById('newApellido').value;
+    let email = document.getElementById('newEmail').value;
+    let rol = document.getElementById('newRol').value;
+    
+    // Validar datos
+    if(!username || !password || !nombre || !apellido || !email) {
+        alert('Por favor, complete todos los campos');
+        return;
+    }
+    
+    // Crear objeto de usuario para enviar
+    let nuevoUsuario = {
+        username: username,
+        password: password,
+        nombre: nombre,
+        apellido: apellido,
+        email: email,
+        roles: [rol]
+    };
+    
+    // Enviar a la API
+    fetch('/api/usuarios/crear', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(nuevoUsuario)
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al crear usuario');
+        }
+        return response.json();
+    })
+    .then(data => {
+        // Mostrar mensaje de éxito
+        document.getElementById('createUserResult').textContent = 'Usuario creado correctamente';
+        document.getElementById('createUserResult').style.display = 'block';
+        document.getElementById('createUserForm').reset();
+        
+        // Recargar la lista de usuarios desde la base de datos
+        loadUsersFromDatabase();
+        
+        // Registrar actividad
+        registrarActividad("Creación de usuario: " + username);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        document.getElementById('createUserResult').textContent = 'Error al crear usuario: ' + error.message;
+        document.getElementById('createUserResult').style.display = 'block';
+        document.getElementById('createUserResult').className = 'error-message';
+    });
+}
+
+// Función para eliminar un usuario
+function confirmDeleteUser() {
+    if(!currentUserId) return;
+    
+    // Guardar ID para referencia
+    let userId = currentUserId;
+    
+    // Hacer la petición DELETE
+    fetch(`/api/usuarios/${userId}`, {
+        method: 'DELETE'
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Error al eliminar usuario');
+        }
+        return response.text();
+    })
+    .then(data => {
+        // Cerrar modal
+        closeDeleteUserModal();
+        
+        // Recargar usuarios desde la BD
+        loadUsersFromDatabase();
+        
+        // Registrar actividad
+        registrarActividad("Eliminación de usuario con ID: " + userId);
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Error al eliminar usuario: ' + error.message);
+    });
+}
+
+// Función auxiliar para registrar actividad
+function registrarActividad(descripcion) {
+    fetch('/api/events/registre', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+            descripcion: descripcion
+        })
+    })
+    .then(response => {
+        if (!response.ok) {
+            console.error('Error al registrar actividad');
+        }
+    })
+    .catch(error => {
+        console.error('Error al registrar actividad:', error);
+    });
+}
+
+// Hacer ping a un dispositivo específico
+function pingDevice(ip) {
+    // Establecer IP en el input
+    document.getElementById('ipAddress').value = ip;
+    // Abrir el modal
+    openPingModal();
+    // Ejecutar el ping
+    executePing();
+}
+
+// Escanear puertos de un dispositivo específico
+function scanDevice(ip) {
+    // Establecer IP en el input
+    document.getElementById('ipAddressScan').value = ip;
+    // Abrir el modal
+    openPortScanModal();
+    // Ejecutar el escaneo con rango predeterminado
+    executePortScan();
+}
+
+// Variable global para el gráfico de protocolos
+let protocolChart = null;
+
+// Inicializar gráfico de protocolos
+function initProtocolChart() {
+    const ctx = document.getElementById('protocolChart');
+    if (!ctx) return;
+    
+    protocolChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: Array(maxDataPoints).fill(''),
+            datasets: [
+                {
+                    label: 'HTTP/HTTPS',
+                    data: Array(maxDataPoints).fill(0),
+                    borderColor: '#3498db',
+                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                },
+                {
+                    label: 'VoIP',
+                    data: Array(maxDataPoints).fill(0),
+                    borderColor: '#2ecc71',
+                    backgroundColor: 'rgba(46, 204, 113, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                },
+                {
+                    label: 'Streaming',
+                    data: Array(maxDataPoints).fill(0),
+                    borderColor: '#e74c3c',
+                    backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                },
+                {
+                    label: 'Otros',
+                    data: Array(maxDataPoints).fill(0),
+                    borderColor: '#95a5a6',
+                    backgroundColor: 'rgba(149, 165, 166, 0.1)',
+                    tension: 0.4,
+                    fill: true
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 0 },
+            plugins: {
+                legend: { display: true },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return context.dataset.label + ': ' + context.parsed.y.toFixed(2) + ' MB/s';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { 
+                        callback: function(value) {
+                            return value.toFixed(1) + ' MB/s';
+                        }
+                    }
+                },
+                x: { display: false }
+            }
+        }
+    });
+}
+
+// Actualizar gráfico de protocolos
+function updateProtocolChart(protocolStats) {
+    if (!protocolChart) return;
+    
+    protocolChart.data.datasets[0].data.push(protocolStats.httpMbps);
+    protocolChart.data.datasets[1].data.push(protocolStats.voipMbps);
+    protocolChart.data.datasets[2].data.push(protocolStats.streamingMbps);
+    protocolChart.data.datasets[3].data.push(protocolStats.otherMbps);
+    
+    // Mantener solo los últimos maxDataPoints
+    protocolChart.data.datasets.forEach(dataset => {
+        if (dataset.data.length > maxDataPoints) {
+            dataset.data.shift();
+        }
+    });
+    
+    protocolChart.update('none');
+}
+
+// Variables para control de umbrales y alertas
+let warningThreshold = 5; // MB/s por defecto
+let criticalThreshold = 10; // MB/s por defecto
+let lastAlertTime = 0;
+let alertCooldown = 10000; // 10 segundos entre alertas
+let activeAlerts = new Set(); // Para evitar alertas duplicadas
+
+// Cargar umbrales desde localStorage
+function loadThresholds() {
+    const savedWarning = localStorage.getItem('warningThreshold');
+    const savedCritical = localStorage.getItem('criticalThreshold');
+    
+    if (savedWarning) {
+        warningThreshold = parseFloat(savedWarning);
+        const input = document.getElementById('warningThreshold');
+        if (input) input.value = warningThreshold;
+    }
+    
+    if (savedCritical) {
+        criticalThreshold = parseFloat(savedCritical);
+        const input = document.getElementById('criticalThreshold');
+        if (input) input.value = criticalThreshold;
+    }
+}
+
+// Actualizar umbrales
+function updateThresholds() {
+    const warningInput = document.getElementById('warningThreshold');
+    const criticalInput = document.getElementById('criticalThreshold');
+    
+    if (warningInput && criticalInput) {
+        warningThreshold = parseFloat(warningInput.value);
+        criticalThreshold = parseFloat(criticalInput.value);
+        
+        // Validar que el umbral crítico sea mayor al de advertencia
+        if (criticalThreshold <= warningThreshold) {
+            alert('El umbral crítico debe ser mayor al de advertencia');
+            return;
+        }
+        
+        // Guardar en localStorage
+        localStorage.setItem('warningThreshold', warningThreshold);
+        localStorage.setItem('criticalThreshold', criticalThreshold);
+        
+        showTemporaryMessage('✓ Umbrales actualizados correctamente');
+    }
+}
+
+// Verificar umbrales y mostrar alertas
+function checkTrafficThresholds(speed) {
+    const now = Date.now();
+    
+    // Cooldown para evitar spam de alertas
+    if (now - lastAlertTime < alertCooldown) {
+        return;
+    }
+    
+    // Alerta crítica
+    if (speed >= criticalThreshold && !activeAlerts.has('critical')) {
+        showTrafficAlert(
+            'critical',
+            '🚨 Tráfico Crítico',
+            `El tráfico ha alcanzado ${speed.toFixed(2)} MB/s (umbral: ${criticalThreshold} MB/s)`
+        );
+        activeAlerts.add('critical');
+        lastAlertTime = now;
+    }
+    // Alerta de advertencia
+    else if (speed >= warningThreshold && speed < criticalThreshold && !activeAlerts.has('warning')) {
+        showTrafficAlert(
+            'warning',
+            '⚠️ Tráfico Elevado',
+            `El tráfico ha alcanzado ${speed.toFixed(2)} MB/s (umbral: ${warningThreshold} MB/s)`
+        );
+        activeAlerts.add('warning');
+        lastAlertTime = now;
+    }
+    // Limpiar alertas si el tráfico baja
+    else if (speed < warningThreshold) {
+        activeAlerts.clear();
+    }
+}
+
+// Mostrar alerta de tráfico
+function showTrafficAlert(type, title, message) {
+    const container = document.getElementById('alertContainer');
+    if (!container) return;
+    
+    const alertId = `alert-${Date.now()}`;
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `traffic-alert ${type}`;
+    alertDiv.id = alertId;
+    
+    alertDiv.innerHTML = `
+        <div class="alert-icon ${type}">
+            <i class="fas ${type === 'critical' ? 'fa-exclamation-triangle' : 'fa-exclamation-circle'}"></i>
+        </div>
+        <div class="alert-content">
+            <div class="alert-title">${title}</div>
+            <div class="alert-message">${message}</div>
+        </div>
+        <div class="alert-close" onclick="closeAlert('${alertId}')">
+            <i class="fas fa-times"></i>
+        </div>
+    `;
+    
+    container.appendChild(alertDiv);
+    
+    // Auto-cerrar después de 10 segundos
+    setTimeout(() => {
+        closeAlert(alertId);
+    }, 10000);
+}
+
+// Cerrar alerta
+function closeAlert(alertId) {
+    const alert = document.getElementById(alertId);
+    if (alert) {
+        alert.style.animation = 'slideOut 0.3s ease-out';
+        setTimeout(() => {
+            alert.remove();
+        }, 300);
+    }
+}
+
+// Mostrar mensaje temporal
+function showTemporaryMessage(message) {
+    const container = document.getElementById('alertContainer');
+    if (!container) return;
+    
+    const alertId = `temp-${Date.now()}`;
+    const alertDiv = document.createElement('div');
+    alertDiv.className = 'traffic-alert';
+    alertDiv.id = alertId;
+    alertDiv.style.borderLeftColor = '#27ae60';
+    alertDiv.style.backgroundColor = '#f0fff4';
+    
+    alertDiv.innerHTML = `
+        <div class="alert-icon" style="color: #27ae60;">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <div class="alert-content">
+            <div class="alert-message">${message}</div>
+        </div>
+    `;
+    
+    container.appendChild(alertDiv);
+    
+    setTimeout(() => {
+        closeAlert(alertId);
+    }, 3000);
+}
+
+// Cerrar modales al hacer clic fuera
+window.onclick = function(event) {
+    const modals = document.querySelectorAll('.modal');
+    modals.forEach(modal => {
+        if (event.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+}
+</script>
+<footer style="margin-top: 20px; text-align: center; font-size: 14px; color: var(--primary-color); padding: 20px 0;">
+    <p>&copy; 2025 ShieldNet. Todos los derechos reservados.</p>
+</footer>
+</body>
+</html>

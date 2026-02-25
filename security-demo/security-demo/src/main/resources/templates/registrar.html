@@ -1,0 +1,417 @@
+<!DOCTYPE html> 
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>ShieldNet | Registrarse</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --success-color: #27ae60;
+            --error-color: #e74c3c;
+            --light-bg: #f8f9fa;
+            --border-radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-y: auto;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .background-network-effect {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            pointer-events: none;
+            opacity: 0.3;
+            z-index: -1;
+        }
+
+        .bg-node {
+            width: 10px;
+            height: 10px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .bg-line {
+            position: absolute;
+            height: 1px;
+            background-color: var(--primary-color);
+            transform-origin: 0% 0%;
+        }
+
+        .login-layout {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 40px;
+            width: 100%;
+            max-width: 720px;
+            background-color: white;
+            border-radius: 10px;
+            padding: 30px;
+            border: 1px solid #e0e0e0;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
+            margin: 20px 0;
+        }
+
+        .brand {
+            flex: 0.8;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding-right: 30px;
+            border-right: 1px solid rgba(0, 0, 0, 0.1);
+            gap: 0;
+        }
+
+        .logo {
+            width: 180px;
+            height: 160px;
+            margin-bottom: 0;
+        }
+
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            font-size: 24px;
+            margin-top: -25px;
+        }
+
+        .tagline {
+            font-size: 14px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .form-section {
+            flex: 1.2;
+            width: 100%;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            color: #2c3e50;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            background-color: white;
+        }
+
+        input:focus {
+            border-color: var(--accent-color);
+            outline: none;
+        }
+
+        button {
+            width: 100%;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: var(--border-radius);
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 8px;
+            position: relative;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .login-icon {
+            display: inline-block;
+            margin-right: 15px;
+            position: relative;
+            width: 30px;
+            height: 20px;
+        }
+
+        .door {
+            position: absolute;
+            top: 0;
+            left: 8px;
+            width: 12px;
+            height: 20px;
+            background-color: white;
+            border: 1px solid rgba(255,255,255,0.7);
+            transform-origin: left center;
+            animation: doorOpen 2s infinite;
+        }
+
+        .doorframe {
+            position: absolute;
+            top: 0;
+            left: 7px;
+            width: 14px;
+            height: 20px;
+            border: 1px solid rgba(255,255,255,0.9);
+        }
+
+        .person {
+            position: absolute;
+            top: 2px;
+            font-size: 16px;
+            animation: personMove 2s infinite;
+        }
+
+        @keyframes personMove {
+            0% { transform: translateX(-12px); opacity: 0; }
+            30% { opacity: 1; }
+            70% { transform: translateX(2px); opacity: 1; }
+            100% { transform: translateX(12px); opacity: 0; }
+        }
+
+        @keyframes doorOpen {
+            0%, 20% { transform: perspective(400px) rotateY(0deg); }
+            60%, 100% { transform: perspective(400px) rotateY(-70deg); }
+        }
+
+        .error-message, .success-message {
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 16px;
+        }
+
+        .error-message {
+            color: var(--error-color);
+        }
+
+        .success-message {
+            color: var(--success-color);
+        }
+
+        .form-actions {
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .back-link {
+            color: var(--accent-color);
+            text-decoration: none;
+            font-size: 14px;
+            transition: color 0.3s;
+        }
+
+        .back-link:hover {
+            color: #2980b9;
+        }
+
+        footer {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 14px;
+            color: var(--primary-color);
+            padding: 10px;
+            width: 100%;
+        }
+
+        /* Botón de desplazamiento */
+        .scroll-down {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 40px;
+            height: 40px;
+            background-color: var(--accent-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 100;
+        }
+
+        .scroll-down.visible {
+            opacity: 1;
+        }
+
+        .scroll-down i {
+            font-size: 18px;
+        }
+
+        @media (max-width: 768px) {
+            .login-layout {
+                flex-direction: column;
+                gap: 20px;
+                padding: 20px;
+            }
+
+            .brand {
+                padding-right: 0;
+                border-right: none;
+                padding-bottom: 20px;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            }
+
+            .logo {
+                width: 150px;
+                height: 130px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="background-network-effect">
+            <!-- Mismos nodos y líneas del fondo -->
+            <div class="bg-node" style="top: 15%; left: 10%;"></div>
+            <div class="bg-line" style="width: 200px; top: 15%; left: 10%; transform: rotate(30deg);"></div>
+            <div class="bg-node" style="top: 35%; left: 25%;"></div>
+            <div class="bg-line" style="width: 250px; top: 35%; left: 25%; transform: rotate(-20deg);"></div>
+            <div class="bg-node" style="top: 65%; left: 15%;"></div>
+            <div class="bg-line" style="width: 300px; top: 65%; left: 15%; transform: rotate(15deg);"></div>
+            <div class="bg-node" style="top: 20%; left: 70%;"></div>
+            <div class="bg-line" style="width: 200px; top: 20%; left: 70%; transform: rotate(-25deg);"></div>
+            <div class="bg-node" style="top: 50%; left: 80%;"></div>
+            <div class="bg-line" style="width: 250px; top: 50%; left: 80%; transform: rotate(10deg);"></div>
+            <div class="bg-node" style="top: 75%; left: 75%;"></div>
+            <div class="bg-line" style="width: 180px; top: 75%; left: 75%; transform: rotate(-15deg);"></div>
+        </div>
+
+        <div class="login-layout">
+            <div class="brand">
+                <div class="logo">
+                    <img src="/img/logo-shieldnet.svg" alt="Logo">
+                </div>
+                <h1>ShieldNet</h1>
+                <p class="tagline">Registra una nueva cuenta</p>
+            </div>
+
+            <div class="form-section">
+                <form th:action="@{/registrar}" method="post" th:object="${userForm}">
+                    <div class="form-group">
+                        <label for="nombre">Nombre</label>
+                        <input type="text" id="nombre" name="nombre" th:field="*{nombre}" placeholder="Ingresa tu nombre" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="apellido">Apellido</label>
+                        <input type="text" id="apellido" name="apellido" th:field="*{apellido}" placeholder="Ingresa tu apellido" required>
+                    </div>
+                
+                    <div class="form-group">
+                        <label for="username">Nombre de usuario</label>
+                        <input type="text" id="username" name="username" th:field="*{username}" placeholder="Elige un nombre de usuario" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="password">Contraseña</label>
+                        <input type="password" id="password" name="password" th:field="*{password}" placeholder="Crea una contraseña segura" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Correo electrónico</label>
+                        <input type="email" id="email" name="email" th:field="*{email}" placeholder="Ingresa tu correo electrónico" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit">
+                            <i class="fas fa-user-plus"></i> Registrarse
+                        </button>
+                    </div>
+                    
+                    <div th:if="${param.error}" class="error-message">
+                        <i class="fas fa-exclamation-circle"></i> <span th:text="${errorMessage}">Error al registrar usuario.</span>
+                    </div>
+                
+                    <!-- Mensaje de éxito sin borde ni fondo -->
+                    <div th:if="${param.success}" class="success-message">
+                        <i class="fas fa-check-circle"></i> Registro exitoso.
+                    </div>
+                </form>
+                <div class="form-actions">
+                    <a href="/login" class="back-link">
+                        <i class="fas fa-arrow-left"></i> Volver al inicio de sesión
+                    </a>
+                </div>
+            </div>
+        </div>
+        <footer>
+            <p>&copy; 2025 ShieldNet. Todos los derechos reservados.</p>
+        </footer>
+    </div>
+
+    <!-- Botón de desplazamiento hacia abajo -->
+    <div class="scroll-down">
+        <i class="fas fa-chevron-down"></i>
+    </div>
+
+    <script>
+        // Script para mostrar/ocultar el botón de desplazamiento
+        window.addEventListener('scroll', function() {
+            const scrollButton = document.querySelector('.scroll-down');
+            if (window.scrollY > 100) {
+                scrollButton.classList.add('visible');
+            } else {
+                scrollButton.classList.remove('visible');
+            }
+        });
+
+        // Función para desplazarse hacia abajo
+        document.querySelector('.scroll-down').addEventListener('click', function() {
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+</body>
+</html>
