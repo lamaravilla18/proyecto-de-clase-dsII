@@ -1,6 +1,6 @@
-# 📌 Proyecto DSII – Sistema de Gestión y Monitoreo de Dispositivos
+#  Proyecto DSII – Sistema de Gestión y Monitoreo de Dispositivos
 
-## 📖 Descripción del Proyecto
+##  Descripción del Proyecto
 
 Este proyecto consiste en el desarrollo de un sistema backend en Spring Boot para la gestión y monitoreo de dispositivos dentro de una red.  
 
@@ -14,7 +14,7 @@ El sistema permite:
 
 ---
 
-## 🎯 Objetivo
+##  Objetivo
 
 Desarrollar una aplicación estructurada bajo arquitectura en capas que permita aplicar conceptos de:
 
@@ -26,7 +26,7 @@ Desarrollar una aplicación estructurada bajo arquitectura en capas que permita 
 
 ---
 
-## 🏗️ Arquitectura del Proyecto
+##  Arquitectura del Proyecto
 
 El proyecto está organizado en las siguientes capas:
 
@@ -39,7 +39,7 @@ El proyecto está organizado en las siguientes capas:
 
 ---
 
-## 🧩 Modelo del Sistema
+##  Modelo del Sistema
 
 ### Entidades principales:
 
@@ -55,7 +55,7 @@ El proyecto está organizado en las siguientes capas:
 
 ---
 
-## 🔐 Funcionalidades Principales
+##  Funcionalidades Principales
 
 - Registro y autenticación de usuarios
 - Asociación de dispositivos a usuarios
@@ -73,7 +73,7 @@ El proyecto está organizado en las siguientes capas:
 
 ---
 
-## 🛠️ Tecnologías Utilizadas
+##  Tecnologías Utilizadas
 
 - Java
 - Spring Boot
@@ -85,7 +85,7 @@ El proyecto está organizado en las siguientes capas:
 
 ---
 
-## 👥 Trabajo Colaborativo
+##  Trabajo Colaborativo
 
 El proyecto fue desarrollado en equipo utilizando control de versiones con Git.
 
@@ -93,7 +93,7 @@ Cada integrante realizó commits individuales evidenciando su participación en 
 
 ---
 
-## 🚀 Cómo Ejecutar el Proyecto
+##  Cómo Ejecutar el Proyecto
 
 1. Clonar el repositorio: git clone https://github.com/lamaravilla18/proyecto-de-clase-dsII/tree/main
 
